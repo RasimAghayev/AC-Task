@@ -15,3 +15,14 @@ docker-compose up -d --build nginx
 ```shell
 docker compose exec -it -u root php chown -R www-data:www-data .
 ```
+
+# Build Container
+
+```shell
+docker-compose up -d --build nginx
+```
+
+# Folder permission problem
+```shell
+docker compose exec -it -u root php chown -R www-data:www-data .
+```
