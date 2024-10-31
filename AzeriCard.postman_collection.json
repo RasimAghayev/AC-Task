@@ -16,11 +16,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{local}}/check/db",
+							"raw": "{{local}}/v1/check/db",
 							"host": [
 								"{{local}}"
 							],
 							"path": [
+								"v1",
 								"check",
 								"db"
 							]
@@ -34,11 +35,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{local}}/check/health",
+							"raw": "{{local}}/v1/check/health",
 							"host": [
 								"{{local}}"
 							],
 							"path": [
+								"v1",
 								"check",
 								"health"
 							]
@@ -52,11 +54,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{local}}/check/static",
+							"raw": "{{local}}/v1/check/static",
 							"host": [
 								"{{local}}"
 							],
 							"path": [
+								"v1",
 								"check",
 								"static"
 							]
@@ -70,11 +73,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{local}}/check/ip",
+							"raw": "{{local}}/v1/check/ip",
 							"host": [
 								"{{local}}"
 							],
 							"path": [
+								"v1",
 								"check",
 								"ip"
 							]
@@ -95,11 +99,12 @@
 							}
 						],
 						"url": {
-							"raw": "{{local}}/check/clear_cache",
+							"raw": "{{local}}/v1/check/clear_cache",
 							"host": [
 								"{{local}}"
 							],
 							"path": [
+								"v1",
 								"check",
 								"clear_cache"
 							]

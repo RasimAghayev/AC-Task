@@ -1,6 +1,6 @@
 <?php
 
-namespace app\Http\Controllers\Check;
+namespace App\Http\Controllers\Check;
 
 use App\Http\Controllers\Controller;
 use Exception;
