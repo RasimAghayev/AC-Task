@@ -1,0 +1,142 @@
+{
+	"info": {
+		"_postman_id": "40096fdb-ec25-446a-92c5-4e693fadfb4e",
+		"name": "AzeriCard",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1965733",
+		"_collection_link": "https://lunar-shadow-319654.postman.co/workspace/My-Workspace~4e865d24-8877-4e72-8c5b-53e91c4b2264/collection/1965733-40096fdb-ec25-446a-92c5-4e693fadfb4e?action=share&source=collection_link&creator=1965733"
+	},
+	"item": [
+		{
+			"name": "check",
+			"item": [
+				{
+					"name": "db",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local}}/check/db",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"check",
+								"db"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local}}/check/health",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"check",
+								"health"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "static",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local}}/check/static",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"check",
+								"static"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ip",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local}}/check/ip",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"check",
+								"ip"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "clear-cache",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Api-Version",
+								"value": "v1",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{local}}/check/clear_cache",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"check",
+								"clear_cache"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "local",
+			"value": "http://localhost/api",
+			"type": "string"
+		}
+	]
+}
