@@ -1,0 +1,152 @@
+name: "AzeriCard"
+networks:
+  AzeriCard:
+    name: AzeriCard
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx.dockerfile
+    container_name: nginx
+    depends_on:
+      - php
+      - pgsql
+#      - npmnx
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./src/be:/var/www/html/be:delegated
+    networks:
+      - AzeriCard
+
+  php:
+    build:
+      context: .
+      dockerfile: php.dockerfile
+    container_name: php
+    volumes:
+      - ./src/be:/var/www/html/be:delegated
+    networks:
+      - AzeriCard
+
+  composer:
+    image: composer:latest
+    container_name: composer
+    volumes:
+      - ./src/be:/var/www/html/be
+    working_dir: /var/www/html/be
+    networks:
+      - AzeriCard
+
+  artisan:
+    build:
+      context: .
+      dockerfile: php.dockerfile
+    container_name: artisan
+    volumes:
+      - ./src/be:/var/www/html/be
+    working_dir: /var/www/html/be
+    entrypoint: ["php", "artisan"]
+    networks:
+      - AzeriCard
+
+  phpunit:
+    build:
+      context: .
+      dockerfile: php.dockerfile
+    container_name: phpunit
+    volumes:
+      - ./src/be:/var/www/html/be
+    working_dir: /var/www/html/be
+    entrypoint: ["/var/www/html/be/vendor/bin/phpunit"]
+    networks:
+      - AzeriCard
+
+  pgsql:
+    image: postgres:latest
+    container_name: pgsql
+    restart: always
+    shm_size: 128mb
+    ports:
+      - 6432:5432
+    volumes:
+      - ./db/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=tasks_project
+      - POSTGRES_USER=AzeriCard
+      - POSTGRES_PASSWORD=AzeriCard
+    networks:
+      - AzeriCard
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb_container
+    ports:
+      - "37017:27017"
+    volumes:
+      - ./db/mongo:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: AzeriCard
+      MONGO_INITDB_ROOT_PASSWORD: AzeriCard
+
+#  npmnx:
+#    build:
+#      context: .
+#      dockerfile: node.dockerfile
+#    container_name: npmnx
+#    ports:
+#      - 3000:3000
+#    working_dir: /var/www/html/fe
+#    networks:
+#      - AzeriCard
+#
+#  npm:
+#    image: node:current-alpine
+#    container_name: npm
+#    ports:
+#      - 5173:3000
+#    volumes:
+#      - ./src/fe:/var/www/html/fe
+#    working_dir: /var/www/html/fe
+#    entrypoint: ["npm"]
+#    networks:
+#      - AzeriCard
+#
+#  npx:
+#    image: node:current-alpine
+#    container_name: npx
+#    volumes:
+#      - ./src/fe:/var/www/html/fe
+#    working_dir: /var/www/html/fe
+#    entrypoint: ["npx"]
+#    networks:
+#      - AzeriCard
+
+#  redis:
+#    image: redis:alpine
+#    container_name: redis
+#    command: redis-server --save 20 1 --loglevel warning
+#    ports:
+#      - "8002:6379"
+#    volumes:
+#      - ./db/redis:/data
+
+#secrets:
+#  db_connection:
+#    file: ./secrets/db_connection
+#  db_host:
+#    file: ./secrets/db_host
+#  db_port:
+#    file: ./secrets/db_port
+#  db_database:
+#    file: ./secrets/db_database
+#  db_username:
+#    file: ./secrets/db_username
+#  db_password:
+#    file: ./secrets/db_password
+#  db_root_password:
+#    file: ./secrets/db_root_password
+#  app_key:
+#    file: ./secrets/app_key
