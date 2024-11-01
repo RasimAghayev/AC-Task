@@ -44,7 +44,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(using: function (Exceptions $exceptions) {
         $exceptions->renderable(function (Throwable $e, Request $request) {
-
+//dd([$e,$request]);
             if ($request->is('api/*') || $request->wantsJson()) {
                 if ($e instanceof HttpResponseException) {
                     return null;
