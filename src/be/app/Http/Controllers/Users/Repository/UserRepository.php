@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Users\Repository;
 
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class UserRepository implements UserRepositoryInterface
 {
@@ -20,7 +21,9 @@ class UserRepository implements UserRepositoryInterface
      */
     public function create(array $data): User
     {
-        return $this->model->create($data);
+        return DB::transaction(function () use ($data) {
+                return $this->model->create($data);
+        });
     }
 
     /**
@@ -39,8 +42,10 @@ class UserRepository implements UserRepositoryInterface
      */
     public function update(User $user, array $data): User
     {
-        return tap($user)->update([
-            'name' => $data['name'],
-        ]);
+        return DB::transaction(function () use ($user,$data) {
+            return tap($user)->update([
+                'name' => $data['name'],
+            ]);
+        });
     }
 }

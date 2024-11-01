@@ -12,11 +12,10 @@ use App\Http\Controllers\Auth\{
     Requests\RegisterRequest,
     Requests\UpdateMeRequest,
     Resources\AuthResource,
-    Service\AuthService,
+    Services\AuthService,
 };
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -36,15 +35,12 @@ class AuthController extends Controller
      */
     public function register(RegisterRequest $request): SuccessApiResponse|ErrorApiResponse
     {
-        DB::beginTransaction();
         try{
             $user = $this->authService->register($request->validated());
+            return SuccessApiResponse::make(["user" =>new AuthResource($user)]);
         }catch (Exception $ex) {
-            DB::rollBack();
             return ErrorApiResponse::make($ex->getMessage());
         }
-        DB::commit();
-        return SuccessApiResponse::make(["user" => $user]);
     }
 
 
@@ -90,15 +86,16 @@ class AuthController extends Controller
      */
     public function updateMe(UpdateMeRequest $request): SuccessApiResponse|ErrorApiResponse
     {
-        DB::beginTransaction();
         try{
-            $user = $this->authService->updateUser(auth('api')->user(), $request->validated());
+            $user = $this->authService->updateUser(
+                    user: auth('api')->user(),
+                    data: $request->validated()
+                );
+            return SuccessApiResponse::make(["user" =>new AuthResource($user)]);
         }catch (Exception $ex) {
             DB::rollBack();
             return ErrorApiResponse::make($ex->getMessage());
         }
-        DB::commit();
-        return SuccessApiResponse::make(["user" =>new AuthResource($user)]);
     }
 
     /**

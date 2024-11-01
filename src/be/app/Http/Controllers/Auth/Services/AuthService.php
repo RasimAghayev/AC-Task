@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth\Service;
+namespace App\Http\Controllers\Auth\Services;
 
 
 use App\Http\Controllers\Users\Repository\UserRepositoryInterface;

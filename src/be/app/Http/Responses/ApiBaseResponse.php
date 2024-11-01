@@ -53,8 +53,8 @@ abstract class ApiBaseResponse extends Response implements Responsable
             'timestamp' => now()->toIso8601String(),
             'path' => $request->path(),
             'method' => $request->method(),
-            'result' => $this->dataOrMessage->original??$this->dataOrMessage,
             'error' => null,
+            'result' => $this->dataOrMessage->original??$this->dataOrMessage,
         ];
 
         if ($this->code === 422) {

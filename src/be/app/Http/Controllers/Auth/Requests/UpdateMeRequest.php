@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Auth\Requests;
 
 use App\Http\Requests\ApiFormRequest;
-use Illuminate\Support\Facades\Auth;
 
 class UpdateMeRequest extends ApiFormRequest
 {
@@ -11,7 +10,7 @@ class UpdateMeRequest extends ApiFormRequest
     {
         return [
             'name' => 'string|max:255',
-            'email' => 'email|unique:users,email,' . Auth::id(),
+            'email' => 'email|unique:users,email,' . auth('api')->id(),
             'password' => 'nullable|min:8|confirmed',
         ];
     }
