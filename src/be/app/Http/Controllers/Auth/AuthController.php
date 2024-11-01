@@ -37,7 +37,11 @@ class AuthController extends Controller
     {
         try{
             $user = $this->authService->register($request->validated());
-            return SuccessApiResponse::make(["user" =>new AuthResource($user)]);
+            $token = auth('api')->login($user);
+            return SuccessApiResponse::make([
+                "user" =>new AuthResource($user),
+                "authorization" => $this->respondWithToken($token)->original
+            ]);
         }catch (Exception $ex) {
             return ErrorApiResponse::make($ex->getMessage());
         }
