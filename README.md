@@ -44,3 +44,23 @@ docker compose run --rm artisan  migrate
  docker compose run --rm artisan jwt:secret
  ```
 
+
+
+# Clear database and generate seed
+```shell
+ docker compose run --rm artisan migrate:fresh --seed
+ ```
+
+
+# Only seed 
+```shell
+ docker compose run --rm artisan db:seed
+ ```
+
+
+# Specification seed 
+```shell
+ docker compose run --rm artisan db:seed --class=UserSeeder
+ docker compose run --rm artisan db:seed --class=UserSeeder
+ ```
+
