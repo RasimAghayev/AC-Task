@@ -6,6 +6,9 @@ use App\Http\Requests\ApiFormRequest;
 
 class UpdateMeRequest extends ApiFormRequest
 {
+    /**
+     * @return string[]
+     */
     public function rules(): array
     {
         return [

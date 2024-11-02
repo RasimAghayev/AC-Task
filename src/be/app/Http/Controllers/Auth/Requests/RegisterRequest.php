@@ -6,6 +6,9 @@ use App\Http\Requests\ApiFormRequest;
 
 class RegisterRequest extends ApiFormRequest
 {
+    /**
+     * @return string[]
+     */
     public function rules(): array
     {
         return [

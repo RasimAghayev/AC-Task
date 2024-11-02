@@ -2,20 +2,24 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Responses\ErrorApiResponse;
-use App\Http\Responses\ErrorUnauthenticatedResponse;
-use App\Http\Responses\SuccessApiResponse;
-use Exception;
-use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Auth\{
+use App\Http\Responses\
+{
+    ErrorApiResponse,
+    ErrorUnauthenticatedResponse,
+    SuccessApiResponse
+};
+use App\Http\Controllers\Auth\
+{
     Requests\LoginRequest,
     Requests\RegisterRequest,
     Requests\UpdateMeRequest,
     Resources\AuthResource,
     Services\AuthService,
 };
-use App\Http\Controllers\Controller;
+use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\JsonResponse;
+use App\Http\Controllers\Controller;
 
 class AuthController extends Controller
 {
@@ -74,8 +78,13 @@ class AuthController extends Controller
     public function me(): SuccessApiResponse|ErrorApiResponse
     {
         try{
+            $user = auth('api')->user();
+            if (!$user) {
+                return ErrorApiResponse::make('Unauthorized', 401);
+            }
+
             return SuccessApiResponse::make(
-                new AuthResource(auth('api')->user())
+                new AuthResource($user)
             );
         }catch (Exception $ex) {
             return ErrorApiResponse::make($ex->getMessage());
