@@ -4,11 +4,16 @@ namespace App\Http\Controllers\Check;
 
 use App\Http\Controllers\Controller;
 use Exception;
-use Illuminate\Http\{
-    JsonResponse,Response
+use Illuminate\Http\
+{
+    JsonResponse,
+    Response
 };
-use Illuminate\Support\Facades\{
-    Artisan,DB,Http
+use Illuminate\Support\Facades\
+{
+    Artisan,
+    DB,
+    Http
 };
 
 class CheckController extends Controller
