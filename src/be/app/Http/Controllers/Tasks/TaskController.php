@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Tasks;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\ValidationException;
+use OpenApi\Annotations as OA;
 use App\Http\Controllers\Tasks\{
     Requests\StoreTaskRequest,
     Requests\UpdateTaskRequest,
@@ -27,6 +28,32 @@ class TaskController extends Controller
      *
      * @param Request $request
      * @return TaskCollection|ErrorApiResponse|SuccessApiResponse
+     */
+
+    /**
+     * @OA\Get(
+     *      path="/api/tasks",
+     *      operationId="getTasksList",
+     *      tags={"Tasks"},
+     *      summary="Get list of tasks",
+     *      description="Returns list of tasks",
+     *      @OA\Response(
+     *          response=200,
+     *          description="Successful operation",
+     *          @OA\JsonContent(
+     *              type="array",
+     *              @OA\Items(
+     *                  type="object",
+     *                  @OA\Property(property="id", type="integer"),
+     *                  @OA\Property(property="title", type="string"),
+     *                  @OA\Property(property="description", type="string"),
+     *                  @OA\Property(property="status", type="string"),
+     *                  @OA\Property(property="created_at", type="string", format="datetime"),
+     *                  @OA\Property(property="updated_at", type="string", format="datetime")
+     *              )
+     *          )
+     *      )
+     * )
      */
     public function index(Request $request): TaskCollection|SuccessApiResponse|ErrorApiResponse
     {

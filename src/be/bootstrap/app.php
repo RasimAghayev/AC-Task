@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middlewares\CompressResponse;
+use App\Http\Middlewares\SwaggerCSPMiddleware;
 use App\Http\Responses\
 {
     ErrorTokenBlacklisted,
@@ -86,6 +87,10 @@ return Application::configure(basePath: dirname(__DIR__))
             ThrottleRequests::class.':60,1',
             EnsureFrontendRequestsAreStateful::class,
             CompressResponse::class,
+        ]);
+        // API Middleware Group
+        $middleware->group('swagger', [
+            SwaggerCSPMiddleware::class
         ]);
 
         // Route Specific Middleware Aliases

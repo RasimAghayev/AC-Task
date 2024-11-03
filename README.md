@@ -64,3 +64,9 @@ docker compose run --rm artisan  migrate
  docker compose run --rm artisan db:seed --class=UserSeeder
  ```
 
+
+# Swagger
+```shell
+ docker compose run --rm  artisan  l5-swagger:generate --all
+ ```
+
