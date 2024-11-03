@@ -1,0 +1,167 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Task Management API Documentation",
+        "description": "Task management sistem API endpoints",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost",
+            "description": "API Server"
+        },
+        {
+            "url": "/api"
+        }
+    ],
+    "paths": {
+        "/api": {},
+        "app": {},
+        "/api/tasks": {
+            "get": {
+                "tags": [
+                    "Tasks"
+                ],
+                "summary": "Get list of tasks",
+                "description": "Returns list of tasks",
+                "operationId": "getTasksList",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer"
+                                            },
+                                            "title": {
+                                                "type": "string"
+                                            },
+                                            "description": {
+                                                "type": "string"
+                                            },
+                                            "status": {
+                                                "type": "string"
+                                            },
+                                            "created_at": {
+                                                "type": "string",
+                                                "format": "datetime"
+                                            },
+                                            "updated_at": {
+                                                "type": "string",
+                                                "format": "datetime"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "403Error": {
+                "properties": {
+                    "result": {
+                        "type": "array",
+                        "items": {},
+                        "example": []
+                    },
+                    "error": {
+                        "type": "string",
+                        "example": "User does not have the right roles."
+                    }
+                },
+                "type": "object"
+            },
+            "401Error": {
+                "properties": {
+                    "result": {
+                        "type": "array",
+                        "items": {},
+                        "example": []
+                    },
+                    "error": {
+                        "type": "string",
+                        "example": "Authentication error."
+                    }
+                },
+                "type": "object"
+            },
+            "500Error": {
+                "properties": {
+                    "result": {
+                        "type": "array",
+                        "items": {},
+                        "example": []
+                    },
+                    "error": {
+                        "type": "string",
+                        "example": "Error string"
+                    }
+                },
+                "type": "object"
+            },
+            "authData": {
+                "description": "Response with authorized user data",
+                "type": "object",
+                "allOf": [
+                    {
+                        "properties": {
+                            "result": {
+                                "properties": {
+                                    "access_token": {
+                                        "description": "JWT access token for user authorization.",
+                                        "type": "string",
+                                        "example": "eyJ0eXAiOiJKV1QiLCJI6IjIiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.dF2UutsiZaLlPB6Mo8wk3Ix3y4oXFMz8GeFX1RM53c8"
+                                    },
+                                    "token_type": {
+                                        "description": "Token type, usually 'bearer'.",
+                                        "type": "string",
+                                        "example": "bearer"
+                                    },
+                                    "expires_in": {
+                                        "description": "Token expiration time in seconds.",
+                                        "type": "integer",
+                                        "example": 2073600
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "error": {
+                                "description": "Error field, will be null in case of successful response.",
+                                "type": "string",
+                                "example": null,
+                                "nullable": true
+                            }
+                        },
+                        "type": "object"
+                    }
+                ]
+            }
+        },
+        "securitySchemes": {
+            "apiAuth": {
+                "type": "http",
+                "description": "Login with email and password to get the authentication token",
+                "name": "Token based Based",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Tasks",
+            "description": "API Endpoints of Task Management System"
+        }
+    ]
+}
