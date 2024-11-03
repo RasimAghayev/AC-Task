@@ -66,6 +66,9 @@ class CheckController extends Controller
         return Http::get('https://ipapi.co/json/')->json();
     }
 
+    /**
+     * @return JsonResponse
+     */
     public function clearCache(): JsonResponse
     {
         Artisan::call('optimize:clear');

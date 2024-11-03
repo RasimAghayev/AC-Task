@@ -14,8 +14,15 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class TaskResource extends JsonResource
 {
+    /**
+     * @var TaskDTO|null
+     */
     private ?TaskDTO $taskDTO = null;
 
+    /**
+     * @param TaskDTO $taskDTO
+     * @return $this
+     */
     public function setDTO(TaskDTO $taskDTO): self
     {
         $this->taskDTO = $taskDTO;

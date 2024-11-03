@@ -4,7 +4,6 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Check\CheckController;
 use App\Http\Controllers\Tasks\TaskController;
 use Illuminate\Support\Facades\Route;
-//use App\Http\Controllers\AuthController;
 
 Route::middleware(['throttle:60,1'])->prefix('v1')->group(function () {
     Route::group(['prefix' => 'check'], function () {

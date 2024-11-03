@@ -13,6 +13,9 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class TaskService implements TaskServiceInterface
 {
+    /**
+     * @param TaskRepositoryInterface $taskRepository
+     */
     public function __construct(
         protected TaskRepositoryInterface $taskRepository
     ){}
@@ -37,25 +40,49 @@ class TaskService implements TaskServiceInterface
         );
     }
 
+    /**
+     * @param TaskDTO $taskDTO
+     * @return Task
+     */
     public function createTask(TaskDTO $taskDTO): Task
     {
         return $this->taskRepository->create($taskDTO);
     }
 
+    /**
+     * @param int $id
+     * @return Task
+     */
     public function getTaskById(int $id): Task
     {
         return $this->taskRepository->findOrFail($id);
     }
 
+    /**
+     * @param int $id
+     * @param TaskDTO $taskDTO
+     * @return Task
+     */
     public function updateTask(int $id, TaskDTO $taskDTO): Task
     {
         return $this->taskRepository->update($id, $taskDTO);
     }
 
+    /**
+     * @param int $id
+     * @return void
+     */
     public function deleteTask(int $id): void
     {
         $this->taskRepository->delete($id);
     }
+
+    /**
+     * @param Request $request
+     * @param bool $includeTags
+     * @param int|null $userId
+     * @return array
+     */
     public function getTasksReport(Request $request, bool $includeTags, ?int $userId = null): array
     {
         $filter = new TaskFilters();

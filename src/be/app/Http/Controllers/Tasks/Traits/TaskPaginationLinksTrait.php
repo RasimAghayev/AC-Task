@@ -7,6 +7,10 @@ use App\Traits\PaginationLinksTrait;
 trait TaskPaginationLinksTrait
 {
     use PaginationLinksTrait;
+
+    /**
+     * @return array
+     */
     protected function getMetaData(): array
     {
         return [

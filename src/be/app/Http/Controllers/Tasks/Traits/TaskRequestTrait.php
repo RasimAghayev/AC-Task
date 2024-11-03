@@ -8,7 +8,6 @@ use App\Http\Controllers\Tasks\Enums\{
     TaskPriority,
     TaskRepeatTypeEnum,
 };
-use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
 
 trait TaskRequestTrait

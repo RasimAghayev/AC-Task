@@ -139,7 +139,6 @@ class TaskRepository implements TaskRepositoryInterface
             ];
         }
 
-        // Priority statistics
         $priorityStats = $query->clone()
             ->select('priority', DB::raw('count(*) as count'))
             ->groupBy('priority')
@@ -155,7 +154,6 @@ class TaskRepository implements TaskRepositoryInterface
             ];
         }
 
-        // Repeat type statistics
         $repeatStats = $query->clone()
             ->select('repeat_type', DB::raw('count(*) as count'))
             ->whereNotNull('repeat_type')
@@ -172,7 +170,6 @@ class TaskRepository implements TaskRepositoryInterface
             ];
         }
 
-        // Additional statistics
         $totalTasks = $query->clone()->count();
         $completedTasks = $statusStats[TaskStatus::COMPLETED->value] ?? 0;
         $completionRate = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100, 2) : 0;

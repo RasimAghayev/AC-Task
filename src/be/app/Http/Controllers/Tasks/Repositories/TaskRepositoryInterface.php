@@ -54,7 +54,7 @@ interface TaskRepositoryInterface
      */
     public function delete(int $id): void;
     /**
-     * Delete task
+     * Get task statistics report
      *
      * @param int $userId
      * @return void
