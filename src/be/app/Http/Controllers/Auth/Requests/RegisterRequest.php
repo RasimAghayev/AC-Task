@@ -12,7 +12,7 @@ class RegisterRequest extends ApiFormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:50',
             'email' => 'required|email|unique:users',
             'password' => 'required|confirmed|min:8',
         ];
