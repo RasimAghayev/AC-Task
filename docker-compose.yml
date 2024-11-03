@@ -91,38 +91,38 @@ services:
       MONGO_INITDB_ROOT_USERNAME: AzeriCard
       MONGO_INITDB_ROOT_PASSWORD: AzeriCard
 
-#  npmnx:
-#    build:
-#      context: .
-#      dockerfile: node.dockerfile
-#    container_name: npmnx
-#    ports:
-#      - 3000:3000
-#    working_dir: /var/www/html/fe
-#    networks:
-#      - AzeriCard
-#
-#  npm:
-#    image: node:current-alpine
-#    container_name: npm
-#    ports:
-#      - 5173:3000
-#    volumes:
-#      - ./src/fe:/var/www/html/fe
-#    working_dir: /var/www/html/fe
-#    entrypoint: ["npm"]
-#    networks:
-#      - AzeriCard
-#
-#  npx:
-#    image: node:current-alpine
-#    container_name: npx
-#    volumes:
-#      - ./src/fe:/var/www/html/fe
-#    working_dir: /var/www/html/fe
-#    entrypoint: ["npx"]
-#    networks:
-#      - AzeriCard
+  npmnx:
+    build:
+      context: .
+      dockerfile: node.dockerfile
+    container_name: npmnx
+    ports:
+      - 5173:5173
+    working_dir: /var/www/html/fe
+    networks:
+      - AzeriCard
+
+  npm:
+    image: node:current-alpine
+    container_name: npm
+    ports:
+      - 3000:3000
+    volumes:
+      - ./src/fe:/var/www/html/fe
+    working_dir: /var/www/html/fe
+    entrypoint: ["npm","run","dev"]
+    networks:
+      - AzeriCard
+
+  npx:
+    image: node:current-alpine
+    container_name: npx
+    volumes:
+      - ./src/fe:/var/www/html/fe
+    working_dir: /var/www/html/fe
+    entrypoint: ["npx"]
+    networks:
+      - AzeriCard
 
 #  redis:
 #    image: redis:alpine

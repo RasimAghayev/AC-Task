@@ -70,3 +70,11 @@ docker compose run --rm artisan  migrate
  docker compose run --rm  artisan  l5-swagger:generate --all
  ```
 
+
+# Node project create
+```shell
+  docker compose run --rm npm create vite@latest . -- --template react-ts
+  ```
+
+
+
