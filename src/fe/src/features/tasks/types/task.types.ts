@@ -60,20 +60,25 @@ export interface CreateTaskDto {
 }
 
 export interface TasksResponse {
-  data: Task[];
-  meta: {
-    current_page: number;
-    from: number;
-    last_page: number;
-    per_page: number;
-    to: number;
-    total: number;
-  };
-  links: {
-    self: string;
-    first: string;
-    last: string;
-    prev: string | null;
-    next: string | null;
-  };
+  timestamp: string;
+  path: string;
+  method: string;
+  error: null | string;result: Array<{
+    data: Task[];
+    meta: {
+      current_page: number;
+      from: number;
+      last_page: number;
+      per_page: number;
+      to: number;
+      total: number;
+    };
+    links: {
+      self: string;
+      first: string;
+      last: string;
+      prev: string | null;
+      next: string | null;
+    };
+  }>;
 }

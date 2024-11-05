@@ -13,7 +13,7 @@
 
 # Laravel 4 specific
 /src/be/bootstrap/compiled.php
-/src/be/app/storage/
+/src/be/App/storage/
 
 # Laravel 5 & Lumen specific
 /src/be/public/storage
