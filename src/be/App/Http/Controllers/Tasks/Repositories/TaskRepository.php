@@ -30,6 +30,7 @@ class TaskRepository implements TaskRepositoryInterface
      */
     public function getFilteredTasks(array $queryItems, bool $includeTags, int $perPage): LengthAwarePaginator
     {
+        $queryItems['user_id'] = auth()->id();
         $query = $this->taskModel->where($queryItems);
 
         if ($includeTags) {

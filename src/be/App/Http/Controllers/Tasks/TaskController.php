@@ -4,21 +4,22 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Tasks;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Validation\ValidationException;
 use OpenApi\Annotations as OA;
-use App\Http\Controllers\Tasks\{
+use App\Http\Controllers\Tasks\{Models\Task,
     Requests\StoreTaskRequest,
     Requests\UpdateTaskRequest,
     Resources\TaskCollection,
     Resources\TaskResource,
-    Services\TaskServiceInterface
-};
+    Services\TaskServiceInterface};
 use App\Http\Responses\{ErrorApiResponse, ErrorValidationResponse, SuccessApiResponse};
 use Illuminate\Http\Request;
 use Throwable;
 
 class TaskController extends Controller
 {
+    use AuthorizesRequests;
     public function __construct(
         private readonly TaskServiceInterface $taskService
     ){}
@@ -58,6 +59,7 @@ class TaskController extends Controller
     public function index(Request $request): TaskCollection|SuccessApiResponse|ErrorApiResponse
     {
         try {
+            $this->authorize('viewAny', Task::class);
             $tasks = $this->taskService->getTasks(
                 request: $request,
                 includeTags: $request->boolean('include_tags'),
@@ -82,6 +84,7 @@ class TaskController extends Controller
     {
         try {
             $task = $this->taskService->createTask($request->toDTO());
+            $this->authorize('update', $task);
 
             return SuccessApiResponse::make([
                 'message' => 'Task successfully created',
@@ -104,6 +107,7 @@ class TaskController extends Controller
     {
         try {
             $task = $this->taskService->getTaskById($id);
+            $this->authorize('view', $task);
 
             return SuccessApiResponse::make([
                 'data' => new TaskResource($task)
@@ -124,6 +128,7 @@ class TaskController extends Controller
     {
         try {
             $task = $this->taskService->updateTask($id, $request->toDTO());
+            $this->authorize('update', $task);
 
             return SuccessApiResponse::make([
                 'message' => 'Task successfully updated',
@@ -143,6 +148,8 @@ class TaskController extends Controller
     public function destroy(int $id): SuccessApiResponse|ErrorApiResponse
     {
         try {
+            $task = $this->taskService->getTaskById($id);
+            $this->authorize('delete', $task);
             $this->taskService->deleteTask($id);
 
             return SuccessApiResponse::make([
