@@ -1,4 +1,4 @@
-# MagicPort
+# AzeriCard
 
 # Create Laravel project
 ```shell
