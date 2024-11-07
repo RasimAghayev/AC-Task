@@ -3,7 +3,7 @@
 /db/mysql
 /db/redis
 /db/postgres
-
+.idx
 .vscode/*
 
 /src/be/vendor/

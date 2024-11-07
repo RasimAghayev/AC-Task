@@ -1,4 +1,4 @@
-name: "AzeriCard"
+#name: "AzeriCard"
 networks:
   AzeriCard:
     name: AzeriCard
@@ -14,7 +14,7 @@ services:
       - pgsql
       - npmnx
     ports:
-      - 80:80
+      - 8000:8000
       - 443:443
     volumes:
       - ./src/be:/var/www/html/be:delegated

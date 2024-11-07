@@ -58,20 +58,18 @@ class TaskController extends Controller
      */
     public function index(Request $request): TaskCollection|SuccessApiResponse|ErrorApiResponse
     {
-        try {
+        return TransactionHelper::handleWithTransaction(function () use ($request) {
             $this->authorize('viewAny', Task::class);
             $tasks = $this->taskService->getTasks(
                 request: $request,
                 includeTags: $request->boolean('include_tags'),
                 perPage: $request->integer('per_page', 15)
             );
-
-            return SuccessApiResponse::make([
-                new TaskCollection($tasks)
-            ]);
-        } catch (Throwable $e) {
-            return ErrorApiResponse::make($e->getMessage());
-        }
+            return [
+                'message' => 'Task successfully full list.',
+                'data' => new TaskCollection($tasks)
+            ];
+        });
     }
 
     /**
@@ -82,19 +80,15 @@ class TaskController extends Controller
      */
     public function store(StoreTaskRequest $request): SuccessApiResponse|ErrorApiResponse|ErrorValidationResponse
     {
-        try {
+        return TransactionHelper::handleWithTransaction(function () use ($request) {
+            $this->authorize('update', Task::class);
             $task = $this->taskService->createTask($request->toDTO());
-            $this->authorize('update', $task);
 
-            return SuccessApiResponse::make([
+            return [
                 'message' => 'Task successfully created',
                 'data' => new TaskResource($task)
-            ]);
-        } catch (ValidationException $e) {
-            return ErrorValidationResponse::make($e->errors());
-        } catch (Throwable $e) {
-            return ErrorApiResponse::make($e->getMessage());
-        }
+            ];
+        });
     }
 
     /**
@@ -105,16 +99,14 @@ class TaskController extends Controller
      */
     public function show(int $id): SuccessApiResponse|ErrorApiResponse
     {
-        try {
+        return TransactionHelper::handleWithTransaction(function () use ($request) {
+            $this->authorize('view', Task::class);
             $task = $this->taskService->getTaskById($id);
-            $this->authorize('view', $task);
-
-            return SuccessApiResponse::make([
+            return [
+                'message' => 'Task successfully show: '.$id,
                 'data' => new TaskResource($task)
-            ]);
-        } catch (Throwable $e) {
-            return ErrorApiResponse::make($e->getMessage());
-        }
+            ];
+        });
     }
 
     /**
@@ -126,17 +118,15 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, int $id): SuccessApiResponse|ErrorApiResponse
     {
-        try {
+        return TransactionHelper::handleWithTransaction(function () use ($request) {
+            $this->authorize('update', Task::class);
             $task = $this->taskService->updateTask($id, $request->toDTO());
-            $this->authorize('update', $task);
 
-            return SuccessApiResponse::make([
+            return [
                 'message' => 'Task successfully updated',
                 'data' => new TaskResource($task)
-            ]);
-        } catch (Throwable $e) {
-            return ErrorApiResponse::make($e->getMessage());
-        }
+            ];
+        });
     }
 
     /**
@@ -147,17 +137,15 @@ class TaskController extends Controller
      */
     public function destroy(int $id): SuccessApiResponse|ErrorApiResponse
     {
-        try {
+        return TransactionHelper::handleWithTransaction(function () use ($request) {
+            $this->authorize('delete', Task::class);
             $task = $this->taskService->getTaskById($id);
-            $this->authorize('delete', $task);
             $this->taskService->deleteTask($id);
 
-            return SuccessApiResponse::make([
+            return [
                 'message' => 'Task successfully deleted'
-            ]);
-        } catch (Throwable $e) {
-            return ErrorApiResponse::make($e->getMessage());
-        }
+            ];
+        });
     }
 
     /**
@@ -168,7 +156,8 @@ class TaskController extends Controller
      */
     public function getTasksReport(Request $request): SuccessApiResponse|ErrorApiResponse
     {
-        try {
+        return TransactionHelper::handleWithTransaction(function () use ($request) {
+            $this->authorize('viewAny', Task::class);
             $userId = $request->boolean('all') ? null : auth('api')->id();
             $report = $this->taskService->getTasksReport(
                 request:$request,
@@ -176,16 +165,11 @@ class TaskController extends Controller
                 userId: $userId
             );
 
-            return SuccessApiResponse::make([
+            return [
                 'message' => 'Task report generated successfully',
                 'data' => $report
-            ]);
-        } catch (Throwable $e) {
-            return ErrorApiResponse::make([
-                'message' => $e->getMessage(),
-                'code' => $e->getCode()
-            ]);
-        }
+            ];
+        });
     }
 
 }

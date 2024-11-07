@@ -9,6 +9,7 @@ use Illuminate\Http\
     JsonResponse,
     Response
 };
+use App\Helpers\TransactionHelper;
 use Illuminate\Support\Facades\
 {
     Artisan,
@@ -23,18 +24,10 @@ class CheckController extends Controller
      */
     public function getDB(): JsonResponse
     {
-        try {
+        return TransactionHelper::handleWithTransaction(function () use ($request) {
             DB::connection()->getPdo();
-            return response()->json(
-                data:['status' => 'Application is up and running, database connection is ok!',],
-                status: Response::HTTP_OK
-            );
-        } catch (Exception $e) {
-            return response()->json(
-                data:['status' => 'Failed to connect to the database.',],
-                status: Response::HTTP_INTERNAL_SERVER_ERROR
-            );
-        }
+            return ['status' => 'Application is up and running, database connection is ok!'];
+        });
     }
 
     /**
@@ -42,10 +35,9 @@ class CheckController extends Controller
      */
     public function getHealth(): JsonResponse
     {
-        return response()->json(
-            data:['status' => 'Application is up and running, health is ok!',],
-            status: Response::HTTP_OK
-        );
+        return TransactionHelper::handleWithTransaction(function () use ($request) {
+            return ['status' => 'Application is up and running, health is ok!'];
+        });
     }
 
     /**
@@ -53,9 +45,9 @@ class CheckController extends Controller
      */
     public function getStatic(): JsonResponse
     {
-        return response()->json([
-            'status' => true,
-        ]);
+        return TransactionHelper::handleWithTransaction(function () use ($request) {
+            return ['status' => true];
+        });
     }
 
     /**
@@ -63,7 +55,9 @@ class CheckController extends Controller
      */
     public function getIP(): mixed
     {
-        return Http::get('https://ipapi.co/json/')->json();
+        return TransactionHelper::handleWithTransaction(function () use ($request) {
+            return Http::get('https://ipapi.co/json/')->json();
+        });
     }
 
     /**
@@ -79,8 +73,8 @@ class CheckController extends Controller
         Artisan::call('route:cache');
         Artisan::call('view:clear');
 
-        return response()->json([
-            'status' => "Cache is cleared ".date(now()),
-        ]);
+        return TransactionHelper::handleWithTransaction(function () use ($request) {
+            return ['status' => "Cache is cleared ".date(now())]
+        });
     }
 }

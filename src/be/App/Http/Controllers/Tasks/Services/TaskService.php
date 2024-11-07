@@ -46,7 +46,9 @@ class TaskService implements TaskServiceInterface
      */
     public function createTask(TaskDTO $taskDTO): Task
     {
-        return $this->taskRepository->create($taskDTO);
+        return DB::transaction(function () use ($taskDTO) {
+            return $this->taskRepository->create($taskDTO);
+        });
     }
 
     /**
@@ -65,7 +67,9 @@ class TaskService implements TaskServiceInterface
      */
     public function updateTask(int $id, TaskDTO $taskDTO): Task
     {
-        return $this->taskRepository->update($id, $taskDTO);
+        return DB::transaction(function () use ($id,$taskDTO) {
+            return $this->taskRepository->update($id, $taskDTO);
+        });
     }
 
     /**
@@ -74,7 +78,9 @@ class TaskService implements TaskServiceInterface
      */
     public function deleteTask(int $id): void
     {
-        $this->taskRepository->delete($id);
+        return DB::transaction(function () use ($id) {
+            $this->taskRepository->delete($id);
+        });
     }
 
     /**

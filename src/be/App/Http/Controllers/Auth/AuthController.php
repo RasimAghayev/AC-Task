@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Helpers\TransactionHelper;
 use App\Http\Responses\
 {
     ErrorApiResponse,
@@ -39,16 +40,14 @@ class AuthController extends Controller
      */
     public function register(RegisterRequest $request): SuccessApiResponse|ErrorApiResponse
     {
-        try{
+        return TransactionHelper::handleWithTransaction(function () use ($request) {
             $user = $this->authService->register($request->validated());
             $token = auth('api')->login($user);
-            return SuccessApiResponse::make([
+            return [
                 "user" =>new AuthResource($user),
                 "authorization" => $this->respondWithToken($token)->original
-            ]);
-        }catch (Exception $ex) {
-            return ErrorApiResponse::make($ex->getMessage());
-        }
+            ];
+        });
     }
 
 
@@ -60,14 +59,16 @@ class AuthController extends Controller
      */
     public function login(LoginRequest $request): SuccessApiResponse|ErrorUnauthenticatedResponse|ErrorApiResponse
     {
-        try{
-            if (!$token = auth('api')->attempt(credentials: $request->all())) {
-                return ErrorUnauthenticatedResponse::make();
+        return TransactionHelper::handleWithTransaction(function () use ($request) {
+            try{
+                if (!$token = auth('api')->attempt(credentials: $request->all())) {
+                    return ErrorUnauthenticatedResponse::make();
+                }
+            }catch (Exception $ex) {
+                return ErrorApiResponse::make($ex->getMessage());
             }
-        }catch (Exception $ex) {
-            return ErrorApiResponse::make($ex->getMessage());
-        }
-        return SuccessApiResponse::make($this->respondWithToken($token));
+            return $this->respondWithToken($token);
+        });
     }
 
     /**
@@ -77,18 +78,13 @@ class AuthController extends Controller
      */
     public function me(): SuccessApiResponse|ErrorApiResponse
     {
-        try{
+        return TransactionHelper::handleWithTransaction(function () use ($request) {
             $user = auth('api')->user();
             if (!$user) {
                 return ErrorApiResponse::make('Unauthorized', 401);
             }
-
-            return SuccessApiResponse::make(
-                new AuthResource($user)
-            );
-        }catch (Exception $ex) {
-            return ErrorApiResponse::make($ex->getMessage());
-        }
+            return new AuthResource($user);
+        });
     }
 
     /**
@@ -99,16 +95,13 @@ class AuthController extends Controller
      */
     public function updateMe(UpdateMeRequest $request): SuccessApiResponse|ErrorApiResponse
     {
-        try{
+        return TransactionHelper::handleWithTransaction(function () use ($request) {
             $user = $this->authService->updateUser(
                     user: auth('api')->user(),
                     data: $request->validated()
                 );
-            return SuccessApiResponse::make(["user" =>new AuthResource($user)]);
-        }catch (Exception $ex) {
-            DB::rollBack();
-            return ErrorApiResponse::make($ex->getMessage());
-        }
+            return ["user" =>new AuthResource($user)];
+        });
     }
 
     /**
@@ -118,12 +111,10 @@ class AuthController extends Controller
      */
     public function logout(): SuccessApiResponse|ErrorApiResponse
     {
-        try{
+        return TransactionHelper::handleWithTransaction(function () use ($request) {
             auth('api')->logout();
-            return SuccessApiResponse::make('Successfully logged out');
-        }catch (Exception $ex) {
-            return ErrorApiResponse::make($ex->getMessage());
-        }
+            return 'Successfully logged out';
+        });
     }
 
     /**
@@ -133,12 +124,10 @@ class AuthController extends Controller
      */
     public function refresh(): SuccessApiResponse|ErrorApiResponse
     {
-        try{
+        return TransactionHelper::handleWithTransaction(function () use ($request) {
             auth('api')->logout();
-            return SuccessApiResponse::make($this->respondWithToken(auth('api')->refresh()));
-        }catch (Exception $ex) {
-            return ErrorApiResponse::make($ex->getMessage());
-        }
+            return $this->respondWithToken(auth('api')->refresh());
+        });
     }
 
     /**
