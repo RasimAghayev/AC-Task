@@ -1,3 +1,4 @@
+[![wakatime](https://wakatime.com/badge/user/d7f8cf89-fee2-46da-89df-70b82216f2c2/project/bbf41023-2501-4c28-8db0-d3b1a10cf616.svg)](https://wakatime.com/badge/user/d7f8cf89-fee2-46da-89df-70b82216f2c2/project/bbf41023-2501-4c28-8db0-d3b1a10cf616)
 # AzeriCard
 
 # Create Laravel project
