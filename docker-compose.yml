@@ -14,8 +14,8 @@ services:
       - pgsql
       - npmnx
     ports:
-      - 80:80
-      - 443:443
+      - 8000:80
+      - 8443:443
     volumes:
       - ./src/be:/var/www/html/be:delegated
     networks:
