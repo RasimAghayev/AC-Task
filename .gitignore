@@ -55,3 +55,4 @@
 /src/fe/.env
 /src/fe/.env.*
 /src/fe/!.env.example
+/db
