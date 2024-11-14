@@ -4,9 +4,9 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 import {
   LayoutDashboard,
   CheckSquare,
-  // Calendar,
-  // Settings,
-  // Users,
+  Calendar,
+  Settings,
+  Users,
   LogOut,
   Menu,
   X
@@ -23,21 +23,21 @@ const menuItems = [
     path: '/tasks',
     icon: CheckSquare
   },
-  // {
-  //   title: 'Calendar',
-  //   path: '/calendar',
-  //   icon: Calendar
-  // },
-  // {
-  //   title: 'Team',
-  //   path: '/team',
-  //   icon: Users
-  // },
-  // {
-  //   title: 'Settings',
-  //   path: '/settings',
-  //   icon: Settings
-  // }
+  {
+    title: 'Calendar',
+    path: '/calendar',
+    icon: Calendar
+  },
+  {
+    title: 'Team',
+    path: '/team',
+    icon: Users
+  },
+  {
+    title: 'Settings',
+    path: '/settings',
+    icon: Settings
+  }
 ];
 
 export const DashboardLayout = () => {

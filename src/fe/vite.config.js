@@ -49,7 +49,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'https://api.lucid-jepsen.62-171-178-116.plesk.page',
+        target: 'https://8000-idx-ac-task-1731609338795.cluster-blu4edcrfnajktuztkjzgyxzek.cloudworkstations.dev',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },

@@ -37,9 +37,9 @@ const App = () => {
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/tasks" element={<TasksPage />} />
-            {/*<Route path="/calendar" element={<CalendarPage />} />*/}
-            {/*<Route path="/team" element={<TeamPage />} />*/}
-            {/*<Route path="/settings" element={<SettingsPage />} />*/}
+            {/* <Route path="/calendar" element={<CalendarPage />} />
+            <Route path="/team" element={<TeamPage />} />
+            <Route path="/settings" element={<SettingsPage />} /> */}
           </Route>
         </Route>
       </Routes>

@@ -21,7 +21,7 @@
     workspace = {
       onStart = {
         # Start docker-compose services on environment start
-        docker-compose = "docker-compose up -d";
+        docker-compose = "docker-compose up -d --build nginx";
       };
     };
   };

@@ -78,7 +78,7 @@ class AuthController extends Controller
      */
     public function me(): SuccessApiResponse|ErrorApiResponse
     {
-        return TransactionHelper::handleWithTransaction(function () use ($request) {
+        return TransactionHelper::handleWithTransaction(function (){
             $user = auth('api')->user();
             if (!$user) {
                 return ErrorApiResponse::make('Unauthorized', 401);
