@@ -29,7 +29,7 @@ return [
             'docs_json' => 'api-docs.json',
             'docs_yaml' => 'api-docs.yaml',
             'annotations' => [
-                base_path('app'),
+                base_path('App'),
             ],
             'views' => base_path('resources/views/vendor/l5-swagger'),
             'base' => env('L5_SWAGGER_BASE_PATH', null),
