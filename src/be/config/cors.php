@@ -20,6 +20,7 @@ return [
     'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 
     'allowed_origins' => [
+        'https://8000-idx-ac-task-1731609338795.cluster-blu4edcrfnajktuztkjzgyxzek.cloudworkstations.dev',
         'http://localhost',
         'http://localhost:3000',
         'http://localhost:5173'

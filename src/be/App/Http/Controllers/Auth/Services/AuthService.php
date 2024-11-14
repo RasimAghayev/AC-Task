@@ -23,8 +23,10 @@ class AuthService
      */
     public function register(array $data): User
     {
-        $data['password'] = Hash::make($data['password']);
-        return $this->userRepository->create($data);
+        return DB::transaction(function () use ($data) {
+            $data['password'] = Hash::make($data['password']);
+            return $this->userRepository->create($data);
+        });
     }
 
     /**
@@ -34,9 +36,11 @@ class AuthService
      */
     public function updateUser(User $user, array $data): User
     {
-        if (isset($data['password'])) {
-            $data['password'] = Hash::make($data['password']);
-        }
-        return $this->userRepository->update($user, $data);
+        return DB::transaction(function () use ($user,$data) {
+            if (isset($data['password'])) {
+                $data['password'] = Hash::make($data['password']);
+            }
+            return $this->userRepository->update($user, $data);
+        });
     }
 }
