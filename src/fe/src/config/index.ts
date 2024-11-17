@@ -1,5 +1,5 @@
 export const config = {
-  apiUrl: import.meta.env.VITE_API_URL || 'https://8000-idx-ac-task-1731609338795.cluster-blu4edcrfnajktuztkjzgyxzek.cloudworkstations.dev/api/v1',
+  apiUrl: import.meta.env.VITE_API_URL || 'http://loclahost:8000/api/v1',
   appTitle: import.meta.env.VITE_APP_TITLE || 'Task Management',
   tokenKey: 'token',
   refreshTokenInterval: 50 * 60 * 1000, // 50 minutes
