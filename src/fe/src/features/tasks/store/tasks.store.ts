@@ -1,11 +1,11 @@
 import { create } from 'zustand';
-import { TasksAPI } from '../api/tasks.api';
 import {
   Task,
   TaskFilters,
   TasksResponse,
   CreateTaskDto
 } from '@features/tasks/types';
+import { TasksAPI } from '@features/tasks/api/tasks.api.ts';
 
 function debounce<T extends (...args: any[]) => any>(
   func: T,
@@ -28,6 +28,9 @@ interface TasksState {
   tasks: Task[];
   meta: TasksResponse['meta'] | null;
   isLoading: boolean;
+  loadingTaskIds: number[];
+  isCreating: boolean;
+  isDeletingIds: number[];
   isSearching: boolean;
   error: string | null;
   currentPage: number;
@@ -38,6 +41,8 @@ interface TasksState {
   // Actions
   setSearchQuery: (query: string) => void;
   setFilters: (filters: TaskFilters) => void;
+  setTaskLoading: (taskId: number, loading: boolean) => void;
+  setTaskDeleting: (taskId: number, deleting: boolean) => void;
   resetFilters: () => void;
   fetchTasks: (page?: number, newFilters?: TaskFilters) => Promise<void>;
   createTask: (data: CreateTaskDto) => Promise<void>;
@@ -81,6 +86,9 @@ export const useTasksStore = create<TasksState>((set, get) => ({
   meta: null,
   isLoading: false,
   isSearching: false,
+  loadingTaskIds: [],
+  isCreating: false,
+  isDeletingIds: [],
   error: null,
   currentPage: 1,
   searchQuery: '',
@@ -133,7 +141,21 @@ export const useTasksStore = create<TasksState>((set, get) => ({
     get().fetchTasks(1);
   },
 
-  debouncedSearch: debounce((query: string) => {
+  setTaskLoading: (taskId: number, loading: boolean) => {
+    set(state => ({
+      loadingTaskIds: loading
+        ? [...state.loadingTaskIds, taskId]
+        : state.loadingTaskIds.filter(id => id !== taskId)
+    }));
+  },
+  setTaskDeleting: (taskId: number, deleting: boolean) => {
+    set(state => ({
+      isDeletingIds: deleting
+        ? [...state.isDeletingIds, taskId]
+        : state.isDeletingIds.filter(id => id !== taskId)
+    }));
+  },
+  debouncedSearch: debounce(() => {
     const state = get();
     if (!state.isLoading) {
       get().fetchTasks(1);
@@ -165,26 +187,15 @@ export const useTasksStore = create<TasksState>((set, get) => ({
       console.log('API Response:', response);
 
 
-      if (!response || !Array.isArray(response.result)) {
+      if (!response?.result?.data) {
         throw new Error('Invalid response format');
       }
 
-      const result = response.result[0];
-      if (!result || !result.data) {
-        set({
-          tasks: [],
-          meta: null,
-          currentPage: page,
-          isLoading: false,
-          isSearching: false,
-          error: null,
-          initialized: true,
-        });
-        return;
-      }
+
+
       set({
-        tasks: Array.isArray(result.data) ? result.data : [],
-        meta: result.meta || null,
+        tasks: response.result.data,
+        meta: response.result.meta || null,
         currentPage: page,
         isLoading: false,
         isSearching: false,
@@ -192,8 +203,8 @@ export const useTasksStore = create<TasksState>((set, get) => ({
         initialized: true,
       });
 
-      console.log('Tasks loaded:', result.data.length);
-      console.log('Meta:', result.meta);
+      console.log('Tasks loaded:', response.result.data.length);
+      console.log('Meta:', response.result.meta);
     } catch (error: any) {
       console.error('Error fetching tasks:', error);
       set({
@@ -207,42 +218,62 @@ export const useTasksStore = create<TasksState>((set, get) => ({
     }
   },
 
-
   updateTask: async (id: number, data: CreateTaskDto) => {
     try {
-      set({ isLoading: true, error: null });
-      await TasksAPI.updateTask(id, data);
+      get().setTaskLoading(id, true);
+      const response = await TasksAPI.updateTask(id, data);
+      set(state => ({
+        tasks: state.tasks.map(task =>
+          task.id === id ? response.result.data : task
+        )
+      }));
       await get().fetchTasks(get().currentPage);
     } catch (error: any) {
-      set({ error: error.message, isLoading: false });
+      set({ error: error.message });
       throw error;
+    } finally {
+      get().setTaskLoading(id, false);
     }
   },
 
   deleteTask: async (id: number) => {
     try {
-      set({ isLoading: true, error: null });
+      get().setTaskDeleting(id, true);
       await TasksAPI.deleteTask(id);
-      await get().fetchTasks(get().currentPage);
+      set(state => ({
+        tasks: state.tasks.filter(task => task.id !== id),
+        error: null
+      }));
+      const state = get();
+      if (state.tasks.length === 0 && state.currentPage > 1) {
+        await get().fetchTasks(state.currentPage - 1);
+      } else {
+        await get().fetchTasks(state.currentPage);
+      }
+
     } catch (error: any) {
-      set({ error: error.message, isLoading: false });
+      set({ error: error.message });
       throw error;
+    } finally {
+      get().setTaskDeleting(id, false);
     }
   },
 
   createTask: async (data: CreateTaskDto) => {
     try {
-      set({ isLoading: true, error: null });
-      await TasksAPI.createTask(data);
+      set({ isCreating: true, error: null });
+      const response = await TasksAPI.createTask(data);
+      set(state => ({
+        tasks: [response, ...state.tasks],
+        error: null
+      }));
       await get().fetchTasks(1);
       return true;
     } catch (error: any) {
-      set({
-        error: error.message,
-        tasks: get().tasks,
-        isLoading: false
-      });
+      set({ error: error.message });
       throw error;
+    } finally {
+      set({ isCreating: false });
     }
   }
 }));

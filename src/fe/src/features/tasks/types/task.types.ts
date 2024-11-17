@@ -63,7 +63,9 @@ export interface TasksResponse {
   timestamp: string;
   path: string;
   method: string;
-  error: null | string;result: Array<{
+  error: null | string;
+  result:{
+    message: null | string;
     data: Task[];
     meta: {
       current_page: number;
@@ -80,5 +82,5 @@ export interface TasksResponse {
       prev: string | null;
       next: string | null;
     };
-  }>;
+  };
 }
