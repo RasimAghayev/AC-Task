@@ -10,6 +10,7 @@ use App\Http\Controllers\Tasks\{
 };
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class TaskService implements TaskServiceInterface
 {
@@ -78,7 +79,7 @@ class TaskService implements TaskServiceInterface
      */
     public function deleteTask(int $id): void
     {
-        return DB::transaction(function () use ($id) {
+        DB::transaction(function () use ($id) {
             $this->taskRepository->delete($id);
         });
     }

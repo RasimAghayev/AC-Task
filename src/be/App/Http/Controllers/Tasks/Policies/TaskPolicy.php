@@ -16,6 +16,14 @@ class TaskPolicy
     }
 
     /**
+     * @param User $user
+     * @return bool
+     */
+    public function createAny(User $user): bool
+    {
+        return true;
+    }
+    /**
      * Determine if the user can view the task.
      */
     public function view(User $user, Task $task): bool

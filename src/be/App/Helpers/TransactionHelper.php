@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TransactionHelper
 {
-    public static function handleWithTransaction(callable $callback)
+    public static function handleWithTransaction(callable $callback): SuccessApiResponse|ErrorApiResponse
     {
         try {
             return SuccessApiResponse::make($callback());

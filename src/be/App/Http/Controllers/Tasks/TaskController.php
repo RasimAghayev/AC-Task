@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Tasks;
 
+use App\Helpers\TransactionHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Validation\ValidationException;
@@ -65,10 +66,7 @@ class TaskController extends Controller
                 includeTags: $request->boolean('include_tags'),
                 perPage: $request->integer('per_page', 15)
             );
-            return [
-                'message' => 'Task successfully full list.',
-                'data' => new TaskCollection($tasks)
-            ];
+            return new TaskCollection($tasks);
         });
     }
 
@@ -81,7 +79,7 @@ class TaskController extends Controller
     public function store(StoreTaskRequest $request): SuccessApiResponse|ErrorApiResponse|ErrorValidationResponse
     {
         return TransactionHelper::handleWithTransaction(function () use ($request) {
-            $this->authorize('update', Task::class);
+            $this->authorize('createAny', Task::class);
             $task = $this->taskService->createTask($request->toDTO());
 
             return [
@@ -99,9 +97,9 @@ class TaskController extends Controller
      */
     public function show(int $id): SuccessApiResponse|ErrorApiResponse
     {
-        return TransactionHelper::handleWithTransaction(function () use ($request) {
-            $this->authorize('view', Task::class);
+        return TransactionHelper::handleWithTransaction(function () use ($id) {
             $task = $this->taskService->getTaskById($id);
+            $this->authorize('view', Task::class);
             return [
                 'message' => 'Task successfully show: '.$id,
                 'data' => new TaskResource($task)
@@ -118,13 +116,14 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, int $id): SuccessApiResponse|ErrorApiResponse
     {
-        return TransactionHelper::handleWithTransaction(function () use ($request) {
-            $this->authorize('update', Task::class);
-            $task = $this->taskService->updateTask($id, $request->toDTO());
+        return TransactionHelper::handleWithTransaction(function () use ($request,$id) {
+            $task = $this->taskService->getTaskById($id);
+            $this->authorize('update', $task);
+            $updatedTask = $this->taskService->updateTask($id, $request->toDTO());
 
             return [
                 'message' => 'Task successfully updated',
-                'data' => new TaskResource($task)
+                'data' => new TaskResource($updatedTask)
             ];
         });
     }
@@ -137,9 +136,9 @@ class TaskController extends Controller
      */
     public function destroy(int $id): SuccessApiResponse|ErrorApiResponse
     {
-        return TransactionHelper::handleWithTransaction(function () use ($request) {
-            $this->authorize('delete', Task::class);
+        return TransactionHelper::handleWithTransaction(function () use ($id) {
             $task = $this->taskService->getTaskById($id);
+            $this->authorize('delete', $task);
             $this->taskService->deleteTask($id);
 
             return [

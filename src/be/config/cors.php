@@ -23,6 +23,7 @@ return [
         'https://8000-idx-ac-task-1731609338795.cluster-blu4edcrfnajktuztkjzgyxzek.cloudworkstations.dev',
         'http://localhost',
         'http://localhost:3000',
+        'http://localhost:3001',
         'http://localhost:5173'
     ],
 
