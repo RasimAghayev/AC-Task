@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Validation\ValidationException;
 use OpenApi\Annotations as OA;
+use App\Helpers\TransactionHelper;
 use App\Http\Controllers\Tasks\{Models\Task,
     Requests\StoreTaskRequest,
     Requests\UpdateTaskRequest,
@@ -65,10 +66,11 @@ class TaskController extends Controller
                 includeTags: $request->boolean('include_tags'),
                 perPage: $request->integer('per_page', 15)
             );
-            return [
-                'message' => 'Task successfully full list.',
-                'data' => new TaskCollection($tasks)
-            ];
+            return new TaskCollection($tasks);
+            // return [
+            //     'message' => 'Task successfully full list.',
+            //     'data' => new TaskCollection($tasks)
+            // ];
         });
     }
 

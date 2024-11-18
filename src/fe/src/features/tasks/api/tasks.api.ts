@@ -51,26 +51,26 @@ export const TasksAPI = {
     );
 
     try {
-      const response = await api.get<APIResponse<TasksResponse>>(
-        `/tasks?${searchParams.toString()}`
-      );
-      console.log('Raw API response:', response.data);
+        const response = await api.get<APIResponse<TasksResponse>>(
+          `/tasks?${searchParams.toString()}`
+        );
+        console.log('Raw API response:', response.data);
 
-      if (!response.data || !response.data.result || !Array.isArray(response.data.result)) {
-        throw new Error('Invalid response format');
-      }
+        if (!response.data || !response.data.result || !Array.isArray(response.data.result)) {
+          throw new Error('Invalid response format');
+        }
 
-      const responseData = response.data;
+        const responseData = response.data;
 
-      // If response.data.result is not an array, wrap it
-      const result = Array.isArray(responseData.result)
-        ? responseData.result
-        : [responseData.result];
+        // If response.data.result is not an array, wrap it
+        const result = Array.isArray(responseData.result)
+          ? responseData.result
+          : [responseData.result];
 
-      return {
-        ...responseData,
-        result: result
-      };
+        return {
+          ...responseData,
+          result: result
+        };
       } catch (error: any) {
         console.error('API Error:', error);
         throw new Error(error.message || 'Failed to fetch tasks');

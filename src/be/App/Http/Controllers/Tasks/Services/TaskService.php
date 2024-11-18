@@ -78,7 +78,7 @@ class TaskService implements TaskServiceInterface
      */
     public function deleteTask(int $id): void
     {
-        return DB::transaction(function () use ($id) {
+        DB::transaction(function () use ($id) {
             $this->taskRepository->delete($id);
         });
     }

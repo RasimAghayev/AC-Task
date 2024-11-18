@@ -111,7 +111,7 @@ class AuthController extends Controller
      */
     public function logout(): SuccessApiResponse|ErrorApiResponse
     {
-        return TransactionHelper::handleWithTransaction(function () use ($request) {
+        return TransactionHelper::handleWithTransaction(function (){
             auth('api')->logout();
             return 'Successfully logged out';
         });
@@ -124,7 +124,7 @@ class AuthController extends Controller
      */
     public function refresh(): SuccessApiResponse|ErrorApiResponse
     {
-        return TransactionHelper::handleWithTransaction(function () use ($request) {
+        return TransactionHelper::handleWithTransaction(function (){
             auth('api')->logout();
             return $this->respondWithToken(auth('api')->refresh());
         });
