@@ -12,7 +12,7 @@ services:
     depends_on:
       - php
       - pgsql
-      - npmnx
+      # - npmnx
     ports:
       - 8000:80
       - 8443:443
@@ -97,7 +97,7 @@ services:
       dockerfile: node.dockerfile
     container_name: npmnx
     ports:
-      - 5173:5173
+      - 3000:5173
     working_dir: /var/www/html/fe
     entrypoint: ["npm","run","dev"]
     networks:

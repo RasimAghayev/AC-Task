@@ -24,7 +24,40 @@ class TaskFilters extends ApiFilter
         'tags' => ['json'],
         'user_id' => ['eq', 'in'],
         'created_at' => ['eq', 'lt', 'lte', 'gt', 'gte', 'bt'],
-        'updated_at' => ['eq', 'lt', 'lte', 'gt', 'gte', 'bt']
+        'updated_at' => ['eq', 'lt', 'lte', 'gt', 'gte', 'bt'],
+        'title_des' => [
+            'concat' => [
+                'relation' => null,
+                'fields' => ['title', 'description']
+            ]
+        ],
+        // Relation queries
+        'type_eq' => [
+            'relation' => 'document.type',
+            'type' => 'eq',
+            'column' => 'value'
+        ],
+        'type_lk' => [
+            'relation' => 'document.type',
+            'type' => 'lk',
+            'column' => 'value'
+        ],
+        'type_nlk' => [
+            'relation' => 'document.type',
+            'type' => 'nlk',
+            'column' => 'value'
+        ],
+        'file_type_lk' => [
+            'relation' => 'document.type',
+            'type' => 'concat',
+            'fields' => ['file', 'filetype', 'size']
+        ],
+        'author' => [
+            'type' => 'concat',
+            'relation' => 'author',
+            'fields' => ['first_name', 'last_name'],
+        ],
+
     ];
 
     protected array $columnMap = [
