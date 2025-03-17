@@ -1,4 +1,4 @@
-FROM php:8.4.1-cli-alpine3.20
+FROM php:8.3-fpm
 
 RUN apt-get update && apt-get install -y \
     build-essential \
