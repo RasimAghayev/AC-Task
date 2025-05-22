@@ -6,23 +6,7 @@ import {
   CreateTaskDto
 } from '@features/tasks/types';
 import { TasksAPI } from '@features/tasks/api/tasks.api.ts';
-
-function debounce<T extends (...args: any[]) => any>(
-  func: T,
-  wait: number
-): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout | null = null;
-
-  return (...args: Parameters<T>) => {
-    if (timeout) {
-      clearTimeout(timeout);
-    }
-
-    timeout = setTimeout(() => {
-      func(...args);
-    }, wait);
-  };
-}
+import { debounce } from '@/shared/utils/debounce';
 
 interface TasksState {
   tasks: Task[];
@@ -54,34 +38,9 @@ interface TasksState {
   hasActiveFilters: boolean;
 }
 
-const initialState: {
-  isLoading: boolean;
-  hasActiveFilters: boolean;
-  meta: null;
-  searchQuery: string;
-  initialized: boolean;
-  isSearching: boolean;
-  filters: {};
-  error: null;
-  currentPage: number;
-  tasks: any[]
-} = {
-  tasks: [],
-  meta: null,
-  isLoading: false,
-  isSearching: false,
-  error: null,
-  currentPage: 1,
-  searchQuery: '',
-  filters: {},
-  hasActiveFilters: false,
-  initialized: false
-};
-
 const DEBOUNCE_MS = 500;
 
 export const useTasksStore = create<TasksState>((set, get) => ({
-  ...initialState,
   tasks: [],
   meta: null,
   isLoading: false,
@@ -122,12 +81,7 @@ export const useTasksStore = create<TasksState>((set, get) => ({
       currentPage: 1
     });
 
-    // Log the filters for debugging
-    console.log('Applied filters:', cleanedFilters);
-
-    setTimeout(() => {
-      get().fetchTasks(1, cleanedFilters);
-    }, 0);
+    get().fetchTasks(1, cleanedFilters);
   },
 
   resetFilters: () => {
@@ -172,26 +126,15 @@ export const useTasksStore = create<TasksState>((set, get) => ({
     try {
       set({ isLoading: true, error: null });
 
-      console.log('Fetching tasks with:', {
-        page,
-        filters,
-        search: state.searchQuery
-      });
-
       const response = await TasksAPI.getTasks({
         page,
         filters: newFilters || state.filters,
         search: state.searchQuery
       });
 
-      console.log('API Response:', response);
-
-
       if (!response?.result?.data) {
         throw new Error('Invalid response format');
       }
-
-
 
       set({
         tasks: response.result.data,
@@ -202,11 +145,7 @@ export const useTasksStore = create<TasksState>((set, get) => ({
         error: null,
         initialized: true,
       });
-
-      console.log('Tasks loaded:', response.result.data.length);
-      console.log('Meta:', response.result.meta);
     } catch (error: any) {
-      console.error('Error fetching tasks:', error);
       set({
         tasks: [],
         meta: null,
@@ -259,19 +198,15 @@ export const useTasksStore = create<TasksState>((set, get) => ({
     }
   },
 
-  createTask: async (data: CreateTaskDto) => {
+  createTask: async (data: CreateTaskDto): Promise<void> => {
     try {
       set({ isCreating: true, error: null });
-      const response = await TasksAPI.createTask(data);
-      set(state => ({
-        tasks: [response, ...state.tasks],
-        error: null
-      }));
+      await TasksAPI.createTask(data);
+      set({ error: null });
       await get().fetchTasks(1);
-      return true;
     } catch (error: any) {
       set({ error: error.message });
-      throw error;
+      // Not re-throwing, error is stored in state
     } finally {
       set({ isCreating: false });
     }

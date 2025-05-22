@@ -24,16 +24,16 @@ class TaskRepository implements TaskRepositoryInterface
      * Get filtered tasks with pagination
      *
      * @param array $queryItems
-     * @param bool $includeTags
+     * @param bool $includeUser
      * @param int $perPage
      * @return LengthAwarePaginator
      */
-    public function getFilteredTasks(array $queryItems, bool $includeTags, int $perPage): LengthAwarePaginator
+    public function getFilteredTasks(array $queryItems, bool $includeUser, int $perPage): LengthAwarePaginator
     {
         $queryItems['user_id'] = auth()->id();
         $query = $this->taskModel->where($queryItems);
 
-        if ($includeTags) {
+        if ($includeUser) {
             $query->with(['user']);
         }
 
@@ -60,18 +60,12 @@ class TaskRepository implements TaskRepositoryInterface
      * Find task by ID
      *
      * @param int $id
-     * @return Task|string
+     * @return Task
      * @throws ModelNotFoundException
      */
-    public function findOrFail(int $id): Task|string
+    public function findOrFail(int $id): Task
     {
-        $task = $this->taskModel->find($id);
-
-        if (!$task) {
-            return "Task not found with ID: {$id}";
-        }
-
-        return $task;
+        return $this->taskModel->findOrFail($id);
     }
 
     /**
@@ -105,13 +99,12 @@ class TaskRepository implements TaskRepositoryInterface
      * Get task statistics report
      *
      * @param array $queryItems
-     * @param bool $includeTags
+     * @param bool $includeUser
      * @param int|null $userId
      * @return array
      */
-    public function getTasksReport(array $queryItems, bool $includeTags, ?int $userId = null): array
+    public function getTasksReport(array $queryItems, bool $includeUser, ?int $userId = null): array
     {
-
         $query = $this->taskModel->query();
 
         if (!empty($queryItems)) {
@@ -120,12 +113,38 @@ class TaskRepository implements TaskRepositoryInterface
         if ($userId) {
             $query->where('user_id', $userId);
         }
-        if ($includeTags) {
+        if ($includeUser) {
             $query->with(['user']);
         }
 
+        $statusReport = $this->_buildStatusReport($query->clone());
+        $priorityReport = $this->_buildPriorityReport($query->clone());
+        $repeatReport = $this->_buildRepeatReport($query->clone());
 
-        $statusStats = $query->clone()
+        $totalTasks = $query->clone()->count();
+        $completedTasks = $statusReport[TaskStatus::COMPLETED->value]['count'] ?? 0;
+        $completionRate = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100, 2) : 0;
+
+        return [
+            'total_tasks' => $totalTasks,
+            'completion_rate' => $completionRate,
+            'by_status' => $statusReport,
+            'by_priority' => $priorityReport,
+            'by_repeat_type' => $repeatReport,
+            'generated_at' => now()->toIso8601String(),
+            'user_id' => $userId
+        ];
+    }
+
+    /**
+     * Build status report
+     *
+     * @param $query
+     * @return array
+     */
+    private function _buildStatusReport($query): array
+    {
+        $statusStats = $query
             ->select('status', DB::raw('count(*) as count'))
             ->groupBy('status')
             ->pluck('count', 'status')
@@ -139,8 +158,18 @@ class TaskRepository implements TaskRepositoryInterface
                 'color' => $status->color()
             ];
         }
+        return $statusReport;
+    }
 
-        $priorityStats = $query->clone()
+    /**
+     * Build priority report
+     *
+     * @param $query
+     * @return array
+     */
+    private function _buildPriorityReport($query): array
+    {
+        $priorityStats = $query
             ->select('priority', DB::raw('count(*) as count'))
             ->groupBy('priority')
             ->pluck('count', 'priority')
@@ -154,8 +183,18 @@ class TaskRepository implements TaskRepositoryInterface
                 'color' => $priority->color()
             ];
         }
+        return $priorityReport;
+    }
 
-        $repeatStats = $query->clone()
+    /**
+     * Build repeat report
+     *
+     * @param $query
+     * @return array
+     */
+    private function _buildRepeatReport($query): array
+    {
+        $repeatStats = $query
             ->select('repeat_type', DB::raw('count(*) as count'))
             ->whereNotNull('repeat_type')
             ->groupBy('repeat_type')
@@ -170,22 +209,6 @@ class TaskRepository implements TaskRepositoryInterface
                 'color' => $repeatType->color()
             ];
         }
-
-        $totalTasks = $query->clone()->count();
-        $completedTasks = $statusStats[TaskStatus::COMPLETED->value] ?? 0;
-        $completionRate = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100, 2) : 0;
-
-        $report = [
-            'total_tasks' => $totalTasks,
-            'completion_rate' => $completionRate,
-            'by_status' => $statusReport,
-            'by_priority' => $priorityReport,
-            'by_repeat_type' => $repeatReport,
-            'generated_at' => now()->toIso8601String(),
-            'user_id' => $userId
-        ];
-
-
-        return $report;
+        return $repeatReport;
     }
 }

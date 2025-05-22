@@ -63,7 +63,7 @@ class TaskController extends Controller
             $this->authorize('viewAny', Task::class);
             $tasks = $this->taskService->getTasks(
                 request: $request,
-                includeTags: $request->boolean('include_tags'),
+                includeUser: $request->boolean('include_user'),
                 perPage: $request->integer('per_page', 15)
             );
             return new TaskCollection($tasks);
@@ -160,7 +160,7 @@ class TaskController extends Controller
             $userId = $request->boolean('all') ? null : auth('api')->id();
             $report = $this->taskService->getTasksReport(
                 request:$request,
-                includeTags: $request->boolean('include_tags'),
+                includeUser: $request->boolean('include_user'),
                 userId: $userId
             );
 
