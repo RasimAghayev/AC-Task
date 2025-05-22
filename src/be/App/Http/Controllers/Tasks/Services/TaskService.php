@@ -20,15 +20,20 @@ class TaskService implements TaskServiceInterface
 
     /**
      * Get filtered tasks with pagination
+     *
+     * @param Request $request
+     * @param bool $includeUser
+     * @param int $perPage
+     * @return LengthAwarePaginator
      */
-    public function getTasks(Request $request, bool $includeTags, int $perPage): LengthAwarePaginator
+    public function getTasks(Request $request, bool $includeUser, int $perPage): LengthAwarePaginator
     {
         $filter = new TaskFilters;
         $queryItems = $filter->transform($request);
 
         return $this->taskRepository->getFilteredTasks(
             queryItems: $queryItems,
-            includeTags: $includeTags,
+            includeUser: $includeUser,
             perPage: $perPage
         );
     }
@@ -59,14 +64,20 @@ class TaskService implements TaskServiceInterface
         });
     }
 
-    public function getTasksReport(Request $request, bool $includeTags, ?int $userId = null): array
+    /**
+     * @param Request $request
+     * @param bool $includeUser
+     * @param int|null $userId
+     * @return array
+     */
+    public function getTasksReport(Request $request, bool $includeUser, ?int $userId = null): array
     {
         $filter = new TaskFilters;
         $queryItems = $filter->transform($request);
 
         return $this->taskRepository->getTasksReport(
             queryItems: $queryItems,
-            includeTags: $includeTags,
+            includeUser: $includeUser,
             userId: $userId
         );
     }
