@@ -20,7 +20,12 @@ return new class extends Migration
             $table->date('due_date');
             $table->enum('status', TaskStatus::values())->default(TaskStatus::PENDING->value);
             $table->timestamps();
-            $table->fulltext(['title', 'description']);
+            // The full text index is a feature of MySQL. The stack of the
+            // project runs on PostgreSQL and the suite runs on SQLite, and
+            // neither of them knows the statement.
+            if (Schema::getConnection()->getDriverName() === 'mysql') {
+                $table->fulltext(['title', 'description']);
+            }
         });
     }
 
@@ -29,9 +34,11 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('tasks', function (Blueprint $table) {
-            $table->dropFullText(['title', 'description']);
-        });
+        if (Schema::getConnection()->getDriverName() === 'mysql') {
+            Schema::table('tasks', function (Blueprint $table) {
+                $table->dropFullText(['title', 'description']);
+            });
+        }
         Schema::dropIfExists('tasks');
     }
 };

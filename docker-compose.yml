@@ -1,23 +1,43 @@
-#name: "AzeriCard"
-networks:
-  AzeriCard:
-    name: AzeriCard
+# The stack of AzeriCard.
+#
+# Every service builds from a Dockerfile of the repository, so no service
+# points at a registry image (R91). The base images of the Dockerfiles are
+# pinned by digest.
+#
+# Every bind mount lives under var/ (R92): the local environment file, the
+# data of the database and the state of the application. The source is baked
+# into the images, so no versioned directory is mounted into a container.
+# Named volumes are forbidden.
+#
+# Resource limits and a health check are required for every service (R60, R64,
+# R102).
+x-resources-default: &resources-default
+  deploy:
+    resources:
+      limits:
+        cpus: "1.0"
+        memory: 512M
+        pids: 256
+      reservations:
+        cpus: "0.25"
+        memory: 128M
 
 services:
   nginx:
     build:
       context: .
       dockerfile: nginx.dockerfile
-    container_name: nginx
+    container_name: ac_nginx
     depends_on:
-      - php
-      - pgsql
-      # - npmnx
+      php:
+        condition: service_healthy
     ports:
-      - 8000:80
-      - 8443:443
+      - "${APP_PORT:-8000}:80"
     volumes:
-      - ./src/be:/var/www/html/be:delegated
+      # The documents of the frontend are built into the image of the node
+      # service and shared with the web server.
+      - ./var/fe:/var/www/html/fe:ro
+    <<: *resources-default
     networks:
       - AzeriCard
 
@@ -25,22 +45,49 @@ services:
     build:
       context: .
       dockerfile: php.dockerfile
-    container_name: php
-    volumes:
-      - ./src/be:/var/www/html/be:delegated
+      target: runtime
+    container_name: ac_php
+    depends_on:
+      pgsql:
+        condition: service_healthy
+    env_file:
+      - var/.env
     environment:
-      - L5_SWAGGER_CONST_HOST=http://localhost/api/v1
+      APP_ENV: local
+      DB_CONNECTION: pgsql
+      DB_HOST: pgsql
+      DB_PORT: "5432"
+      L5_SWAGGER_CONST_HOST: ${L5_SWAGGER_CONST_HOST:-http://localhost/api/v1}
+    volumes:
+      - ./var/storage:/var/www/html/be/storage
+    <<: *resources-default
+    networks:
+      - AzeriCard
+
+  test:
+    build:
+      context: .
+      dockerfile: php.dockerfile
+      target: test
+    profiles: ["test"]
+    # The suite runs against a database in memory, so it needs neither a
+    # database nor the network. It reads no environment file, so the values of
+    # the local machine cannot change the result.
+    <<: *resources-default
     networks:
       - AzeriCard
 
   composer:
-    image: composer:latest
-    container_name: composer
+    build:
+      context: .
+      dockerfile: composer.dockerfile
+    container_name: ac_composer
+    working_dir: /var/www/html/be
     volumes:
       - ./src/be:/var/www/html/be
-    working_dir: /var/www/html/be
     environment:
-      - L5_SWAGGER_CONST_HOST=http://localhost/api/v1
+      L5_SWAGGER_CONST_HOST: ${L5_SWAGGER_CONST_HOST:-http://localhost/api/v1}
+    <<: *resources-default
     networks:
       - AzeriCard
 
@@ -48,113 +95,101 @@ services:
     build:
       context: .
       dockerfile: php.dockerfile
-    container_name: artisan
-    volumes:
-      - ./src/be:/var/www/html/be
+      target: runtime
+    container_name: ac_artisan
     working_dir: /var/www/html/be
     entrypoint: ["php", "artisan"]
+    env_file:
+      - var/.env
     environment:
-      - L5_SWAGGER_CONST_HOST=http://localhost/api/v1
-    networks:
-      - AzeriCard
-
-  phpunit:
-    build:
-      context: .
-      dockerfile: php.dockerfile
-    container_name: phpunit
+      DB_CONNECTION: pgsql
+      DB_HOST: pgsql
+      DB_PORT: "5432"
+    depends_on:
+      pgsql:
+        condition: service_healthy
     volumes:
-      - ./src/be:/var/www/html/be
-    working_dir: /var/www/html/be
-    entrypoint: ["/var/www/html/be/vendor/bin/phpunit"]
-    environment:
-      - L5_SWAGGER_CONST_HOST=http://localhost/api/v1
+      - ./var/storage:/var/www/html/be/storage
+    <<: *resources-default
     networks:
       - AzeriCard
 
   pgsql:
-    image: postgres:latest
-    container_name: pgsql
+    build:
+      context: .
+      dockerfile: postgres.dockerfile
+    container_name: ac_pgsql
     restart: always
     shm_size: 128mb
     ports:
-      - 6432:5432
+      - "${DB_PORT:-6432}:5432"
     volumes:
-      - ./db/postgres:/var/lib/postgresql/data
+      - ./var/postgres:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=tasks_project
-      - POSTGRES_USER=AzeriCard
-      - POSTGRES_PASSWORD=AzeriCard
+      POSTGRES_DB: ${DB_DATABASE:?DB_DATABASE is required, copy .env.example to var/.env}
+      POSTGRES_USER: ${DB_USERNAME:?DB_USERNAME is required, copy .env.example to var/.env}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required, copy .env.example to var/.env}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:?DB_USERNAME is required} -d ${DB_DATABASE:?DB_DATABASE is required}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    <<: *resources-default
     networks:
       - AzeriCard
 
   mongodb:
-    image: mongo:latest
-    container_name: mongodb_container
+    build:
+      context: .
+      dockerfile: mongo.dockerfile
+    container_name: ac_mongodb
+    restart: always
     ports:
-      - "37017:27017"
+      - "${MONGO_PORT:-37017}:27017"
     volumes:
-      - ./db/mongo:/data/db
+      - ./var/mongo:/data/db
     environment:
-      MONGO_INITDB_ROOT_USERNAME: AzeriCard
-      MONGO_INITDB_ROOT_PASSWORD: AzeriCard
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME:?DB_USERNAME is required, copy .env.example to var/.env}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required, copy .env.example to var/.env}
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    <<: *resources-default
+    networks:
+      - AzeriCard
 
-  npmnx:
+  node:
     build:
       context: .
       dockerfile: node.dockerfile
-    container_name: npmnx
-    ports:
-      - 3000:5173
+      target: build
+    container_name: ac_node
     working_dir: /var/www/html/fe
-    entrypoint: ["npm","run","dev"]
-    networks:
-      - AzeriCard
-
-  npm:
-    image: node:current-alpine
-    container_name: npm
-    ports:
-      - 3000:3000
+    environment:
+      # The build of the frontend needs more heap than the default of Node,
+      # and the build ended in an error of the memory without it.
+      NODE_OPTIONS: --max-old-space-size=1536
     volumes:
-      - ./src/fe:/var/www/html/fe
-    working_dir: /var/www/html/fe
+      # The source of the frontend is in the image, like the source of the
+      # application. A mount of the source would hide the node_modules of the
+      # image, and the build would end with "vite: not found".
+      - ./var/fe:/var/www/html/fe/dist
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 2G
+          pids: 512
+        reservations:
+          cpus: "0.25"
+          memory: 256M
     networks:
       - AzeriCard
 
-  npx:
-    image: node:current-alpine
-    container_name: npx
-    volumes:
-      - ./src/fe:/var/www/html/fe
-    working_dir: /var/www/html/fe
-    entrypoint: ["npx"]
-    networks:
-      - AzeriCard
-
-#  redis:
-#    image: redis:alpine
-#    container_name: redis
-#    command: redis-server --save 20 1 --loglevel warning
-#    ports:
-#      - "8002:6379"
-#    volumes:
-#      - ./db/redis:/data
-
-#secrets:
-#  db_connection:
-#    file: ./secrets/db_connection
-#  db_host:
-#    file: ./secrets/db_host
-#  db_port:
-#    file: ./secrets/db_port
-#  db_database:
-#    file: ./secrets/db_database
-#  db_username:
-#    file: ./secrets/db_username
-#  db_password:
-#    file: ./secrets/db_password
-#  db_root_password:
-#    file: ./secrets/db_root_password
-#  app_key:
-#    file: ./secrets/app_key
+networks:
+  AzeriCard:
+    name: AzeriCard

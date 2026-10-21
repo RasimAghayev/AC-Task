@@ -6,10 +6,6 @@ use Illuminate\Http\JsonResponse;
 
 abstract class ApiErrorResponse extends ApiBaseResponse
 {
-    /**
-     * @param $request
-     * @return JsonResponse
-     */
     public function toResponse($request): JsonResponse
     {
         $response = parent::toResponse($request);
@@ -19,7 +15,7 @@ abstract class ApiErrorResponse extends ApiBaseResponse
         $data['error'] = $data['result'];
         $data['result'] = [];
 
-        if(empty($data['error'])) {
+        if (empty($data['error'])) {
             $data['error'] = $this->defaultErrorMessage();
         }
 

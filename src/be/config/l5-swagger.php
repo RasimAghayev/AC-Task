@@ -22,7 +22,7 @@ return [
                 'docs' => [],
                 'oauth2_callback' => [],
             ],
-            'group_options' => []
+            'group_options' => [],
         ],
         'paths' => [
             'docs' => storage_path('api-docs'),

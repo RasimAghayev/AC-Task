@@ -1,13 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Http\Controllers\Tasks\Traits;
 
-use App\Http\Controllers\Tasks\Enums\{
-    TaskStatus,
-    TaskPriority,
-    TaskRepeatTypeEnum,
-};
+use App\Http\Controllers\Tasks\Enums\TaskPriority;
+use App\Http\Controllers\Tasks\Enums\TaskRepeatTypeEnum;
+use App\Http\Controllers\Tasks\Enums\TaskStatus;
 use Illuminate\Validation\Rule;
 
 trait TaskRequestTrait
@@ -34,11 +33,11 @@ trait TaskRequestTrait
                     if ($this->input('repeat_type') === TaskRepeatTypeEnum::CUSTOM->value && empty($value)) {
                         $fail('Xüsusi təkrarlanma seçildikdə bitmə tarixi mütləq daxil edilməlidir.');
                     }
-                }
+                },
             ],
             'tags' => ['nullable', 'array'],
             'tags.*' => ['string'],
-            'user_id' => ['exists:users,id']
+            'user_id' => ['exists:users,id'],
         ];
     }
 
@@ -77,14 +76,30 @@ trait TaskRequestTrait
     {
         $data = [];
 
-        if (isset($this->title)) $data['title'] = $this->title;
-        if (isset($this->description)) $data['description'] = $this->description;
-        if (isset($this->dueDate)) $data['due_date'] = $this->dueDate;
-        if (isset($this->status)) $data['status'] = $this->status;
-        if (isset($this->priority)) $data['priority'] = $this->priority;
-        if (isset($this->repeatType)) $data['repeat_type'] = $this->repeatType;
-        if (isset($this->repeatEndDate)) $data['repeat_end_date'] = $this->repeatEndDate;
-        if (isset($this->tags)) $data['tags'] = $this->tags;
+        if (isset($this->title)) {
+            $data['title'] = $this->title;
+        }
+        if (isset($this->description)) {
+            $data['description'] = $this->description;
+        }
+        if (isset($this->dueDate)) {
+            $data['due_date'] = $this->dueDate;
+        }
+        if (isset($this->status)) {
+            $data['status'] = $this->status;
+        }
+        if (isset($this->priority)) {
+            $data['priority'] = $this->priority;
+        }
+        if (isset($this->repeatType)) {
+            $data['repeat_type'] = $this->repeatType;
+        }
+        if (isset($this->repeatEndDate)) {
+            $data['repeat_end_date'] = $this->repeatEndDate;
+        }
+        if (isset($this->tags)) {
+            $data['tags'] = $this->tags;
+        }
         $data['user_id'] = auth('api')->id();
 
         $this->merge($data);

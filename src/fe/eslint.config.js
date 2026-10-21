@@ -17,7 +17,7 @@ export default [
         sourceType: 'module',
       },
     },
-    settings: { react: { version: '18.3' } },
+    settings: { react: { version: '19.1' } },
     plugins: {
       react,
       'react-hooks': reactHooks,
@@ -33,6 +33,14 @@ export default [
         'warn',
         { allowConstantExport: true },
       ],
+    },
+  },
+  {
+    // The files of the build run in Node, and they use the names of it.
+    files: ['*.config.js', 'eslint.config.js', 'postcss.config.js', 'vite.config.js'],
+    languageOptions: {
+      globals: globals.node,
+      sourceType: 'module',
     },
   },
 ]

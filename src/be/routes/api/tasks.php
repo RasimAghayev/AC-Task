@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::group([
     'middleware' => ['api', 'auth:api'],
-    'prefix' => 'tasks'
+    'prefix' => 'tasks',
 ], function () {
     // List and search
     Route::get('/', [TaskController::class, 'index'])

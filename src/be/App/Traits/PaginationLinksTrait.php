@@ -2,9 +2,22 @@
 
 namespace App\Traits;
 
+use OpenApi\Annotations as OA;
+
+/**
+ * @OA\Schema(
+ *     schema="PaginationLinks",
+ *     type="object",
+ *     description="The addresses of the pages of the listing.",
+ *
+ * @OA\Property(property="first", type="string", nullable=true, example="http://localhost/api/v1/tasks?page=1"),
+ * @OA\Property(property="last", type="string", nullable=true, example="http://localhost/api/v1/tasks?page=3"),
+ * @OA\Property(property="prev", type="string", nullable=true, example="http://localhost/api/v1/tasks?page=1"),
+ * @OA\Property(property="next", type="string", nullable=true, example="http://localhost/api/v1/tasks?page=3")
+ * )
+ */
 trait PaginationLinksTrait
 {
-
     protected function getSelfLink(): ?string
     {
         return $this->resource->url($this->resource->currentPage());
@@ -29,5 +42,4 @@ trait PaginationLinksTrait
     {
         return $this->resource->nextPageUrl();
     }
-
 }

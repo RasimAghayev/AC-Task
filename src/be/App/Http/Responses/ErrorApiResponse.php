@@ -8,10 +8,6 @@ use Throwable;
 
 class ErrorApiResponse extends ApiErrorResponse
 {
-    /**
-     * @param $request
-     * @return JsonResponse
-     */
     public function toResponse($request): JsonResponse
     {
         $response = parent::toResponse($request);
@@ -23,14 +19,12 @@ class ErrorApiResponse extends ApiErrorResponse
         $data['result'] = [];
 
         $response->setData($data);
+
         return $response;
     }
 
     /**
      * Format error message based on input type
-     *
-     * @param mixed $error
-     * @return string
      */
     protected function formatErrorMessage(mixed $error): string
     {
@@ -51,18 +45,14 @@ class ErrorApiResponse extends ApiErrorResponse
         return (string) $error ?: $this->defaultErrorMessage();
     }
 
-    /**
-     * @return int
-     */
-    #[Override] protected function defaultResponseCode(): int
+    #[Override]
+    protected function defaultResponseCode(): int
     {
         return 500;
     }
 
-    /**
-     * @return string
-     */
-    #[Override] protected function defaultErrorMessage(): string
+    #[Override]
+    protected function defaultErrorMessage(): string
     {
         return 'Something went wrong';
     }

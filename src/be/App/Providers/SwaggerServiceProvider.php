@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\ServiceProvider;
 
 class SwaggerServiceProvider extends ServiceProvider
 {
@@ -19,22 +19,22 @@ class SwaggerServiceProvider extends ServiceProvider
         ], function () {
             Route::get('/', [
                 'as' => 'l5-swagger.api',
-                'uses' => '\L5Swagger\Http\Controllers\SwaggerController@api'
+                'uses' => '\L5Swagger\Http\Controllers\SwaggerController@api',
             ]);
 
             Route::get('asset/{asset}', [
                 'as' => 'l5-swagger.asset',
-                'uses' => '\L5Swagger\Http\Controllers\SwaggerController@asset'
+                'uses' => '\L5Swagger\Http\Controllers\SwaggerController@asset',
             ]);
 
             Route::get('docs', [
                 'as' => 'l5-swagger.docs',
-                'uses' => '\L5Swagger\Http\Controllers\SwaggerController@docs'
+                'uses' => '\L5Swagger\Http\Controllers\SwaggerController@docs',
             ]);
 
             Route::get('oauth2-callback', [
                 'as' => 'l5-swagger.oauth2',
-                'uses' => '\L5Swagger\Http\Controllers\SwaggerController@oauth2Callback'
+                'uses' => '\L5Swagger\Http\Controllers\SwaggerController@oauth2Callback',
             ]);
         });
     }
