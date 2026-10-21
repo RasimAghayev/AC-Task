@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers\Tasks\Repositories;
 
-use App\Http\Controllers\Tasks\
-{
-    DTOs\TaskDTO,
-    Enums\TaskPriority,
-    Enums\TaskRepeatTypeEnum,
-    Enums\TaskStatus,
-    Models\Task
-};
+use App\Http\Controllers\Tasks\DTOs\TaskDTO;
+use App\Http\Controllers\Tasks\Enums\TaskPriority;
+use App\Http\Controllers\Tasks\Enums\TaskRepeatTypeEnum;
+use App\Http\Controllers\Tasks\Enums\TaskStatus;
+use App\Http\Controllers\Tasks\Models\Task;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -18,15 +15,10 @@ class TaskRepository implements TaskRepositoryInterface
 {
     public function __construct(
         protected Task $taskModel
-    ){}
+    ) {}
 
     /**
      * Get filtered tasks with pagination
-     *
-     * @param array $queryItems
-     * @param bool $includeTags
-     * @param int $perPage
-     * @return LengthAwarePaginator
      */
     public function getFilteredTasks(array $queryItems, bool $includeTags, int $perPage): LengthAwarePaginator
     {
@@ -41,15 +33,12 @@ class TaskRepository implements TaskRepositoryInterface
         $perPage = min($perPage, $maxPerPage);
 
         return $query->orderBy('created_at', 'desc')
-                ->paginate($perPage)
-                ->appends(request()->query());
+            ->paginate($perPage)
+            ->appends(request()->query());
     }
 
     /**
      * Create new task
-     *
-     * @param TaskDTO $taskDTO
-     * @return Task
      */
     public function create(TaskDTO $taskDTO): Task
     {
@@ -59,16 +48,18 @@ class TaskRepository implements TaskRepositoryInterface
     /**
      * Find task by ID
      *
-     * @param int $id
-     * @return Task|string
      * @throws ModelNotFoundException
      */
-    public function findOrFail(int $id): Task|string
+    public function findOrFail(int $id): Task
     {
         $task = $this->taskModel->find($id);
 
-        if (!$task) {
-            return "Task not found with ID: {$id}";
+        // The method returned a text when the task was not there, so the
+        // caller had to know that the answer was not a task. The exception
+        // of the framework is what the name of the method promises, and the
+        // answer of the API turns it into the status 404.
+        if (! $task) {
+            throw (new ModelNotFoundException)->setModel($this->taskModel, [$id]);
         }
 
         return $task;
@@ -76,10 +67,6 @@ class TaskRepository implements TaskRepositoryInterface
 
     /**
      * Update existing task
-     *
-     * @param int $id
-     * @param TaskDTO $taskDTO
-     * @return Task
      */
     public function update(int $id, TaskDTO $taskDTO): Task
     {
@@ -91,9 +78,6 @@ class TaskRepository implements TaskRepositoryInterface
 
     /**
      * Delete task
-     *
-     * @param int $id
-     * @return void
      */
     public function delete(int $id): void
     {
@@ -103,18 +87,13 @@ class TaskRepository implements TaskRepositoryInterface
 
     /**
      * Get task statistics report
-     *
-     * @param array $queryItems
-     * @param bool $includeTags
-     * @param int|null $userId
-     * @return array
      */
     public function getTasksReport(array $queryItems, bool $includeTags, ?int $userId = null): array
     {
 
         $query = $this->taskModel->query();
 
-        if (!empty($queryItems)) {
+        if (! empty($queryItems)) {
             $query->where($queryItems);
         }
         if ($userId) {
@@ -123,7 +102,6 @@ class TaskRepository implements TaskRepositoryInterface
         if ($includeTags) {
             $query->with(['user']);
         }
-
 
         $statusStats = $query->clone()
             ->select('status', DB::raw('count(*) as count'))
@@ -136,7 +114,7 @@ class TaskRepository implements TaskRepositoryInterface
             $statusReport[$status->value] = [
                 'count' => $statusStats[$status->value] ?? 0,
                 'label' => $status->label(),
-                'color' => $status->color()
+                'color' => $status->color(),
             ];
         }
 
@@ -151,7 +129,7 @@ class TaskRepository implements TaskRepositoryInterface
             $priorityReport[$priority->value] = [
                 'count' => $priorityStats[$priority->value] ?? 0,
                 'label' => $priority->label(),
-                'color' => $priority->color()
+                'color' => $priority->color(),
             ];
         }
 
@@ -167,7 +145,7 @@ class TaskRepository implements TaskRepositoryInterface
             $repeatReport[$repeatType->value] = [
                 'count' => $repeatStats[$repeatType->value] ?? 0,
                 'label' => $repeatType->label(),
-                'color' => $repeatType->color()
+                'color' => $repeatType->color(),
             ];
         }
 
@@ -182,9 +160,8 @@ class TaskRepository implements TaskRepositoryInterface
             'by_priority' => $priorityReport,
             'by_repeat_type' => $repeatReport,
             'generated_at' => now()->toIso8601String(),
-            'user_id' => $userId
+            'user_id' => $userId,
         ];
-
 
         return $report;
     }
