@@ -26,10 +26,13 @@ jobs:
 
       - name: Create the local environment file
         # Every bind mount of the compose stack lives under var/ (R92). The
-        # values are the placeholders of .env.example.
+        # values are the placeholders of .env.example. The password of the
+        # database has no default value, so the pipeline gives it one of its
+        # own.
         run: |
           mkdir -p var
           cp .env.example var/.env
+          echo "DB_PASSWORD=ci-only-value" >> var/.env
 
       - name: Validate the compose file
         run: docker compose --env-file var/.env config --quiet
@@ -57,10 +60,13 @@ jobs:
 
       - name: Create the local environment file
         # Every bind mount of the compose stack lives under var/ (R92). The
-        # values are the placeholders of .env.example.
+        # values are the placeholders of .env.example. The password of the
+        # database has no default value, so the pipeline gives it one of its
+        # own.
         run: |
           mkdir -p var
           cp .env.example var/.env
+          echo "DB_PASSWORD=ci-only-value" >> var/.env
 
       - name: Build the image of the frontend
         run: docker compose --env-file var/.env build node

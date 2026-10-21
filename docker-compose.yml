@@ -170,7 +170,9 @@ services:
     container_name: ac_node
     working_dir: /var/www/html/fe
     volumes:
-      - ./src/fe:/var/www/html/fe
+      # The source of the frontend is in the image, like the source of the
+      # application. A mount of the source would hide the node_modules of the
+      # image, and the build would end with "vite: not found".
       - ./var/fe:/var/www/html/fe/dist
     <<: *resources-default
     networks:
