@@ -2,18 +2,14 @@
 
 namespace App\Http\Controllers\Tasks\DTOs;
 
-
+use App\Http\Controllers\Tasks\Enums\TaskPriority;
+use App\Http\Controllers\Tasks\Enums\TaskRepeatTypeEnum;
+use App\Http\Controllers\Tasks\Enums\TaskStatus;
 use DateMalformedIntervalStringException;
 use DateMalformedPeriodStringException;
 use DateMalformedStringException;
-use InvalidArgumentException;
-use App\Http\Controllers\Tasks\Enums\
-{
-    TaskRepeatTypeEnum,
-    TaskStatus,
-    TaskPriority
-};
 use DateTime;
+use InvalidArgumentException;
 
 readonly class TaskDTO
 {
@@ -22,17 +18,16 @@ readonly class TaskDTO
      * @throws DateMalformedPeriodStringException
      */
     public function __construct(
-        public string                $title,
-        public ?string               $description,
-        public ?DateTime             $due_date,
-        public TaskStatus            $status,
-        public TaskPriority          $priority,
-        public ?TaskRepeatTypeEnum   $repeat_type,
-        public ?DateTime             $repeat_end_date,
-        public ?array                $tags,
-        public int                   $user_id
-    )
-    {}
+        public string $title,
+        public ?string $description,
+        public ?DateTime $due_date,
+        public TaskStatus $status,
+        public TaskPriority $priority,
+        public ?TaskRepeatTypeEnum $repeat_type,
+        public ?DateTime $repeat_end_date,
+        public ?array $tags,
+        public int $user_id
+    ) {}
 
     /**
      * @throws DateMalformedStringException
@@ -62,13 +57,10 @@ readonly class TaskDTO
             repeat_type: $repeatType,
             repeat_end_date: $repeatEndDate,
             tags: $data['tags'] ?? null,
-            user_id:  auth('api')->id(),
+            user_id: auth('api')->id(),
         );
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         return [

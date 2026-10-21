@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 declare(strict_types=1);
 
 namespace App\Filters;
@@ -8,7 +9,9 @@ use Illuminate\Http\Request;
 class ApiFilter
 {
     protected array $safeParms = [];
+
     protected array $columnMap = [];
+
     protected array $operatorMap = [
         'eq' => '=',
         'lt' => '<',
@@ -34,11 +37,11 @@ class ApiFilter
 
         foreach ($this->safeParms as $parm => $details) {
             $query = $request->query($parm);
-            if (!$query) {
+            if (! $query) {
                 continue;
             }
 
-            if (is_array($details) && !isset($details[0])) {
+            if (is_array($details) && ! isset($details[0])) {
                 foreach ($details as $operator) {
                     if (isset($query[$operator])) {
                         $column = $this->columnMap[$parm] ?? $parm;
@@ -53,10 +56,10 @@ class ApiFilter
                 $type = $details['type'] ?? null;
                 $fields = $details['fields'] ?? [];
 
-                if ($type === 'concat' && !empty($fields)) {
+                if ($type === 'concat' && ! empty($fields)) {
                     $eloQuery[] = $this->applyConcatFilter($relation, $fields, $query[$type]);
                 } elseif ($type && isset($query[$type])) {
-                    if ($result = $this->buildQuery($relation ? $relation . '.' . $column : $column, $type, $query[$type])) {
+                    if ($result = $this->buildQuery($relation ? $relation.'.'.$column : $column, $type, $query[$type])) {
                         $eloQuery[] = $result;
                     }
                 }
@@ -74,12 +77,12 @@ class ApiFilter
             return $this->applyConcatFilter($relation, $fields, $value);
         }
 
-        if (!$mappedOperator) {
+        if (! $mappedOperator) {
             return null;
         }
 
         return match ($operator) {
-            'lk', 'nlk' => [$column, $mappedOperator, '%' . $value . '%'],
+            'lk', 'nlk' => [$column, $mappedOperator, '%'.$value.'%'],
             'bt', 'nbt' => is_array($value) && count($value) === 2
                 ? [$column, $mappedOperator, $value]
                 : null,
@@ -96,12 +99,12 @@ class ApiFilter
         if (empty($fields)) {
             return null;
         }
-        
-        $concatenatedColumns = "CONCAT(" . implode(", ' ', ", $fields) . ")";
-        
-        return function ($query) use ($relation, $fields, $value) {
+
+        $concatenatedColumns = 'CONCAT('.implode(", ' ', ", $fields).')';
+
+        return function ($query) use ($relation, $value) {
             if ($relation) {
-                $query->whereHas($relation, function ($q) use ($fields, $value) {
+                $query->whereHas($relation, function ($q) use ($value) {
                     $q->whereRaw("$concatenatedColumns LIKE ?", ["%{$value}%"]);
                 });
             } else {

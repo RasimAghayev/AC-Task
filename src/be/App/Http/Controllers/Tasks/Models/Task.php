@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Tasks\Models;
 
 use App\Models\User;
 use Database\Factories\TaskFactory;
-use Illuminate\Database\Eloquent\{Factories\HasFactory, Model, Relations\BelongsTo};
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $user_id
@@ -23,7 +25,7 @@ class Task extends Model
         'repeat_type',
         'repeat_end_date',
         'tags',
-        'user_id'
+        'user_id',
     ];
 
     protected $casts = [
@@ -32,13 +34,11 @@ class Task extends Model
         'tags' => 'array',
     ];
 
-    /**
-     * @return BelongsTo
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
+
     /**
      * Create a new factory instance for the model.
      */

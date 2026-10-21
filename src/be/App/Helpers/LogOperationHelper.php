@@ -12,10 +12,11 @@ class LogOperationHelper
             Log::info("{$operationName} started.");
             $result = $callback();
             Log::info("{$operationName} completed successfully.");
+
             return $result;
         } catch (\Exception $e) {
-                Log::error("An error occurred during {$operationName}: " . $e->getMessage());
-                throw $e;
-            }
+            Log::error("An error occurred during {$operationName}: ".$e->getMessage());
+            throw $e;
+        }
     }
 }

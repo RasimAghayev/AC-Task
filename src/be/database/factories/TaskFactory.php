@@ -2,12 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Http\Controllers\Tasks\Enums\TaskPriority;
+use App\Http\Controllers\Tasks\Enums\TaskRepeatTypeEnum;
+use App\Http\Controllers\Tasks\Enums\TaskStatus;
 use App\Http\Controllers\Tasks\Models\Task;
-use App\Http\Controllers\Tasks\Enums\{
-    TaskRepeatTypeEnum,
-    TaskStatus,
-    TaskPriority
-};
 use DateTime;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

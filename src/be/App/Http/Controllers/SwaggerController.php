@@ -33,6 +33,7 @@ use OpenApi\Annotations as OA;
  *     schema="ErrorApiResponse",
  *     type="object",
  *     required={"error"},
+ *
  *     @OA\Property(property="error", type="string", example="Error message"),
  *     @OA\Property(property="message", type="string", example="Additional error details"),
  *     @OA\Property(property="code", type="integer", example=500)
@@ -44,6 +45,7 @@ use OpenApi\Annotations as OA;
  *     schema="ErrorUnauthenticatedResponse",
  *     type="object",
  *     required={"error"},
+ *
  *     @OA\Property(property="error", type="string", example="Unauthenticated"),
  *     @OA\Property(property="message", type="string", example="User not authenticated"),
  *     @OA\Property(property="code", type="integer", example=401)
@@ -55,6 +57,7 @@ use OpenApi\Annotations as OA;
  *     schema="ErrorValidationResponse",
  *     type="object",
  *     required={"error"},
+ *
  *     @OA\Property(property="error", type="string", example="Validation failed"),
  *     @OA\Property(property="message", type="string", example="The given data was invalid"),
  *     @OA\Property(property="errors", type="object", example={"email": {"The email field is required."}}),
@@ -67,6 +70,7 @@ use OpenApi\Annotations as OA;
  *     schema="ErrorNotFoundResponse",
  *     type="object",
  *     required={"error"},
+ *
  *     @OA\Property(property="error", type="string", example="Not found"),
  *     @OA\Property(property="message", type="string", example="Resource not found"),
  *     @OA\Property(property="code", type="integer", example=404)
@@ -78,6 +82,7 @@ use OpenApi\Annotations as OA;
  *     schema="ErrorInternalServerErrorResponse",
  *     type="object",
  *     required={"error"},
+ *
  *     @OA\Property(property="error", type="string", example="Internal server error"),
  *     @OA\Property(property="message", type="string", example="An unexpected error occurred"),
  *     @OA\Property(property="code", type="integer", example=500)
@@ -89,6 +94,7 @@ use OpenApi\Annotations as OA;
  *     schema="ErrorMethodNotAllowedResponse",
  *     type="object",
  *     required={"error"},
+ *
  *     @OA\Property(property="error", type="string", example="Method not allowed"),
  *     @OA\Property(property="message", type="string", example="The requested method is not allowed for this resource"),
  *     @OA\Property(property="code", type="integer", example=405)
@@ -100,6 +106,7 @@ use OpenApi\Annotations as OA;
  *     schema="ErrorTooManyAttemptsResponse",
  *     type="object",
  *     required={"error"},
+ *
  *     @OA\Property(property="error", type="string", example="Too many attempts"),
  *     @OA\Property(property="message", type="string", example="Too many login attempts. Please try again later."),
  *     @OA\Property(property="code", type="integer", example=429)
@@ -111,6 +118,7 @@ use OpenApi\Annotations as OA;
  *     schema="ErrorTokenExpiredResponse",
  *     type="object",
  *     required={"error"},
+ *
  *     @OA\Property(property="error", type="string", example="Token expired"),
  *     @OA\Property(property="message", type="string", example="The provided token has expired"),
  *     @OA\Property(property="code", type="integer", example=401)
@@ -122,6 +130,7 @@ use OpenApi\Annotations as OA;
  *     schema="ErrorTokenInvalidResponse",
  *     type="object",
  *     required={"error"},
+ *
  *     @OA\Property(property="error", type="string", example="Token invalid"),
  *     @OA\Property(property="message", type="string", example="The provided token is invalid"),
  *     @OA\Property(property="code", type="integer", example=401)
@@ -133,6 +142,7 @@ use OpenApi\Annotations as OA;
  *     schema="ErrorTokenBlacklistedResponse",
  *     type="object",
  *     required={"error"},
+ *
  *     @OA\Property(property="error", type="string", example="Token blacklisted"),
  *     @OA\Property(property="message", type="string", example="The provided token has been blacklisted"),
  *     @OA\Property(property="code", type="integer", example=401)
@@ -147,6 +157,7 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     schema="SuccessApiResponse",
  *     type="object",
+ *
  *     @OA\Property(property="message", type="string", example="Operation successful"),
  *     @OA\Property(property="data", type="object")
  * )
@@ -160,6 +171,7 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     schema="AuthResource",
  *     type="object",
+ *
  *     @OA\Property(property="id", type="integer", example=1),
  *     @OA\Property(property="name", type="string", example="John Doe"),
  *     @OA\Property(property="email", type="string", format="email", example="john@example.com"),
@@ -173,6 +185,7 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     schema="AuthCollection",
  *     type="object",
+ *
  *     @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/AuthResource")),
  *     @OA\Property(property="links", ref="#/components/schemas/PaginationLinks"),
  *     @OA\Property(property="meta", ref="#/components/schemas/PaginationMeta")
@@ -184,6 +197,7 @@ use OpenApi\Annotations as OA;
  *     schema="LoginRequest",
  *     type="object",
  *     required={"email", "password"},
+ *
  *     @OA\Property(property="email", type="string", format="email", example="john@example.com"),
  *     @OA\Property(property="password", type="string", format="password", example="secret123")
  * )
@@ -194,6 +208,7 @@ use OpenApi\Annotations as OA;
  *     schema="RegisterRequest",
  *     type="object",
  *     required={"name", "email", "password", "password_confirmation"},
+ *
  *     @OA\Property(property="name", type="string", example="John Doe"),
  *     @OA\Property(property="email", type="string", format="email", example="john@example.com"),
  *     @OA\Property(property="password", type="string", format="password", example="secret123"),
@@ -205,6 +220,7 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     schema="UpdateMeRequest",
  *     type="object",
+ *
  *     @OA\Property(property="name", type="string", example="John Doe"),
  *     @OA\Property(property="email", type="string", format="email", example="john@example.com")
  * )
@@ -218,6 +234,7 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     schema="TaskResource",
  *     type="object",
+ *
  *     @OA\Property(property="id", type="integer", example=1),
  *     @OA\Property(property="title", type="string", example="Complete project"),
  *     @OA\Property(property="description", type="string", example="Finish the Laravel project"),
@@ -234,6 +251,7 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     schema="TaskCollection",
  *     type="object",
+ *
  *     @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/TaskResource")),
  *     @OA\Property(property="links", ref="#/components/schemas/PaginationLinks"),
  *     @OA\Property(property="meta", ref="#/components/schemas/PaginationMeta")
@@ -245,6 +263,7 @@ use OpenApi\Annotations as OA;
  *     schema="StoreTaskRequest",
  *     type="object",
  *     required={"title"},
+ *
  *     @OA\Property(property="title", type="string", example="New task"),
  *     @OA\Property(property="description", type="string", example="Task description"),
  *     @OA\Property(property="status", type="string", enum={"pending", "in_progress", "completed", "cancelled"}, example="pending"),
@@ -258,6 +277,7 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     schema="UpdateTaskRequest",
  *     type="object",
+ *
  *     @OA\Property(property="title", type="string", example="Updated task"),
  *     @OA\Property(property="description", type="string", example="Updated description"),
  *     @OA\Property(property="status", type="string", enum={"pending", "in_progress", "completed", "cancelled"}, example="in_progress"),
@@ -275,6 +295,7 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     schema="PaginationLinks",
  *     type="object",
+ *
  *     @OA\Property(property="first", type="string", format="uri", nullable=true),
  *     @OA\Property(property="last", type="string", format="uri", nullable=true),
  *     @OA\Property(property="prev", type="string", format="uri", nullable=true),
@@ -286,6 +307,7 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     schema="PaginationMeta",
  *     type="object",
+ *
  *     @OA\Property(property="current_page", type="integer", example=1),
  *     @OA\Property(property="from", type="integer", nullable=true, example=1),
  *     @OA\Property(property="last_page", type="integer", example=10),
@@ -304,6 +326,7 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     schema="TaskReport",
  *     type="object",
+ *
  *     @OA\Property(property="total_tasks", type="integer", example=150),
  *     @OA\Property(property="completed_tasks", type="integer", example=45),
  *     @OA\Property(property="pending_tasks", type="integer", example=80),
@@ -312,7 +335,6 @@ use OpenApi\Annotations as OA;
  *     @OA\Property(property="completion_rate", type="number", format="float", example=30.0)
  * )
  */
-
 class SwaggerController extends Controller
 {
     //

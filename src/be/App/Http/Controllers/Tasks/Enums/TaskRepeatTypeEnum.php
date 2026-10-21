@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Tasks\Enums;
 
 use DateInterval;
@@ -15,13 +16,9 @@ enum TaskRepeatTypeEnum: string
     case YEARLY = 'yearly';
     case CUSTOM = 'custom';
 
-
-    /**
-     * @return string
-     */
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::DAILY => 'Günlük',
             self::WEEKLY => 'Həftəlik',
             self::HALF_A_MONTH => 'Yarım aylıq',
@@ -31,24 +28,19 @@ enum TaskRepeatTypeEnum: string
         };
     }
 
-    /**
-     * @return array
-     */
     public static function values(): array
     {
         return array_column(self::cases(), 'value');
     }
 
-
     /**
      * Calculate the next execution date based on the repeat type.
-     * @param DateTime $startDate
-     * @return DateTime|null
+     *
      * @throws InvalidArgumentException
      */
     public function getNextExecutionDate(DateTime $startDate): ?DateTime
     {
-        $intervalSpec = match($this) {
+        $intervalSpec = match ($this) {
             self::DAILY => 'P1D',
             self::WEEKLY => 'P1W',
             self::HALF_A_MONTH => 'P15D',
@@ -64,18 +56,16 @@ enum TaskRepeatTypeEnum: string
         try {
             $nextDate = clone $startDate;
             $nextDate->add(new DateInterval($intervalSpec));
+
             return $nextDate;
         } catch (Exception $e) {
             throw new InvalidArgumentException("Invalid interval specification: {$intervalSpec}", 0, $e);
         }
     }
 
-    /**
-     * @return string
-     */
     public function color(): string
     {
-        return match($this) {
+        return match ($this) {
             self::DAILY => '#4CAF50',
             self::WEEKLY => '#2196F3',
             self::HALF_A_MONTH => '#673AB7',
