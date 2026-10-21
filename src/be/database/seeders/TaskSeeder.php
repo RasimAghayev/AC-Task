@@ -13,7 +13,7 @@ class TaskSeeder extends Seeder
     public function run(): void
     {
         User::all()->each(function ($user) {
-            $taskCount = rand(60, 100);
+            $taskCount = random_int(60, 100);
 
             $statusDistribution = [
                 'pending' => 40,
