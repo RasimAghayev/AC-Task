@@ -32,11 +32,28 @@ class TransactionHelper
 
             return SuccessApiResponse::make($result);
         } catch (AuthorizationException $e) {
-            return ErrorApiResponse::make('Authorization failed: '.$e->getMessage(), 403);
+            return ErrorApiResponse::make(self::message('Authorization failed', $e), 403);
         } catch (ModelNotFoundException|NotFoundHttpException $e) {
-            return ErrorApiResponse::make('Resource not found: '.$e->getMessage(), 404);
+            return ErrorApiResponse::make(self::message('Resource not found', $e), 404);
         } catch (Throwable $e) {
-            return ErrorApiResponse::make('An error occurred: '.$e->getMessage(), 500);
+            return ErrorApiResponse::make(self::message('An error occurred', $e), 500);
         }
+    }
+
+    /**
+     * The message of a failure.
+     *
+     * The message of the exception says what went wrong inside the
+     * application, and that says something about the state of the machine to
+     * whoever reads it. It is only in the answer while the application runs
+     * with the debug turned on.
+     */
+    private static function message(string $prefix, Throwable $exception): string
+    {
+        if (! config('app.debug')) {
+            return $prefix.'.';
+        }
+
+        return $prefix.': '.$exception->getMessage();
     }
 }

@@ -169,12 +169,24 @@ services:
       target: build
     container_name: ac_node
     working_dir: /var/www/html/fe
+    environment:
+      # The build of the frontend needs more heap than the default of Node,
+      # and the build ended in an error of the memory without it.
+      NODE_OPTIONS: --max-old-space-size=1536
     volumes:
       # The source of the frontend is in the image, like the source of the
       # application. A mount of the source would hide the node_modules of the
       # image, and the build would end with "vite: not found".
       - ./var/fe:/var/www/html/fe/dist
-    <<: *resources-default
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 2G
+          pids: 512
+        reservations:
+          cpus: "0.25"
+          memory: 256M
     networks:
       - AzeriCard
 
