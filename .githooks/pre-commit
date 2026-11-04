@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+# Phase 4 (git hygiene) secret scan, run on every commit's staged changes.
+# Enable once per clone:  git config core.hooksPath .githooks
+#
+# Uses gitleaks if it is on PATH; otherwise falls back to the official
+# Docker image (Docker is already a hard requirement of this project).
+set -e
+
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks protect --staged --redact -v
+elif command -v docker >/dev/null 2>&1; then
+  docker run --rm -v "$(pwd):/repo" -w /repo zricethezav/gitleaks:latest \
+    protect --staged --redact -v
+else
+  echo "pre-commit: neither gitleaks nor docker is available, cannot run the secret scan." >&2
+  echo "Install gitleaks (https://github.com/gitleaks/gitleaks) or Docker." >&2
+  exit 1
+fi
