@@ -1,3 +1,7 @@
+![Views](https://hits.sh/github.com/RasimAghayev/AC-Task.svg?label=views&color=0e75b6)
+
+[![wakatime](https://wakatime.com/badge/user/d7f8cf89-fee2-46da-89df-70b82216f2c2/project/bbf41023-2501-4c28-8db0-d3b1a10cf616.svg)](https://wakatime.com/badge/user/d7f8cf89-fee2-46da-89df-70b82216f2c2/project/bbf41023-2501-4c28-8db0-d3b1a10cf616)
+
 # AzeriCard
 
 A task management API: categories with subcategories, tasks with a priority, a
@@ -177,6 +181,11 @@ same runtime as the last one.
   swagger-php with it, which has no analyser for the annotations of the
   docblocks any more. Every annotation of the project would have to become an
   attribute of PHP, which is a change of the whole documentation of the API.
+- **A hook scans every commit for a secret before it is made.** It is not on
+  by default, since a hook of git is never installed on its own. Run
+  `git config core.hooksPath .githooks` once in a clone to turn it on; it
+  calls `gitleaks` if the tool is on the `PATH`, or its image of Docker
+  otherwise.
 
 ## Known limitations
 
