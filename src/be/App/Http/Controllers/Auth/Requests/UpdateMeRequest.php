@@ -13,7 +13,7 @@ class UpdateMeRequest extends ApiFormRequest
     {
         return [
             'name' => 'string|max:255',
-            'email' => 'email|unique:users,email,' . auth('api')->id(),
+            'email' => 'email|unique:users,email,'.auth('api')->id(),
             'password' => 'nullable|min:8|confirmed',
         ];
     }

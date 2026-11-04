@@ -2,12 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Http\Controllers\Tasks\Enums\TaskPriority;
+use App\Http\Controllers\Tasks\Enums\TaskRepeatTypeEnum;
+use App\Http\Controllers\Tasks\Enums\TaskStatus;
 use App\Http\Controllers\Tasks\Models\Task;
-use App\Http\Controllers\Tasks\Enums\{
-    TaskRepeatTypeEnum,
-    TaskStatus,
-    TaskPriority
-};
 use DateTime;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -42,7 +40,7 @@ class TaskFactory extends Factory
             'priority' => fake()->randomElement(TaskPriority::cases())->value,
             'repeat_type' => $repeatType?->value,
             'repeat_end_date' => $repeatEndDate,
-            'tags' => fake()->randomElements(['work', 'personal', 'shopping', 'health', 'family', 'study'], rand(1, 3)),
+            'tags' => fake()->randomElements(['work', 'personal', 'shopping', 'health', 'family', 'study'], random_int(1, 3)),
             'user_id' => null,
         ];
     }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Http\Controllers\Tasks\Requests;
@@ -9,7 +10,24 @@ use App\Http\Controllers\Tasks\Traits\TaskRequestTrait;
 use App\Http\Requests\ApiFormRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\Validator;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\Schema(
+ *     schema="UpdateTaskRequest",
+ *     type="object",
+ *     description="The values of a task that changes.",
+ *
+ * @OA\Property(property="title", type="string", example="Write the report"),
+ * @OA\Property(property="description", type="string", nullable=true, example="The report of the quarter."),
+ * @OA\Property(property="due_date", type="string", format="date", example="2026-12-01"),
+ * @OA\Property(property="status", type="string", enum={"pending", "in_progress", "under_review", "completed", "cancelled"}, example="pending"),
+ * @OA\Property(property="priority", type="string", enum={"low", "medium", "high"}, example="medium"),
+ * @OA\Property(property="repeat_type", type="string", nullable=true, enum={"daily", "weekly", "monthly", "custom"}, example="daily"),
+ * @OA\Property(property="repeat_end_date", type="string", format="date", nullable=true, example="2026-12-31"),
+ * @OA\Property(property="tags", type="array", nullable=true, @OA\Items(type="string"))
+ * )
+ */
 class UpdateTaskRequest extends ApiFormRequest
 {
     use TaskRequestTrait;
@@ -19,7 +37,6 @@ class UpdateTaskRequest extends ApiFormRequest
     /**
      * Get task instance
      *
-     * @return Task
      * @throws ModelNotFoundException
      */
     protected function getTask(): Task
@@ -34,13 +51,12 @@ class UpdateTaskRequest extends ApiFormRequest
 
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
         try {
             $task = $this->getTask();
+
             return $task->user_id === auth('api')->id();
         } catch (ModelNotFoundException) {
             return false;
@@ -58,7 +74,7 @@ class UpdateTaskRequest extends ApiFormRequest
 
         if ($this->method() === 'PUT') {
             foreach ($rules as $field => &$fieldRules) {
-                if (!is_array($fieldRules)) {
+                if (! is_array($fieldRules)) {
                     $fieldRules = [$fieldRules];
                 }
 
@@ -67,13 +83,13 @@ class UpdateTaskRequest extends ApiFormRequest
                     continue;
                 }
 
-                if (!in_array('required', $fieldRules)) {
+                if (! in_array('required', $fieldRules)) {
                     array_unshift($fieldRules, 'required');
                 }
             }
         } else {
             foreach ($rules as $field => &$fieldRules) {
-                if (!is_array($fieldRules)) {
+                if (! is_array($fieldRules)) {
                     $fieldRules = [$fieldRules];
                 }
                 array_unshift($fieldRules, 'sometimes');
@@ -96,7 +112,6 @@ class UpdateTaskRequest extends ApiFormRequest
     /**
      * Convert validated data to DTO
      *
-     * @return TaskDTO
      * @throws ModelNotFoundException
      */
     public function toDTO(): TaskDTO
@@ -119,7 +134,7 @@ class UpdateTaskRequest extends ApiFormRequest
             }
         }
 
-        if (!isset($validatedData['user_id'])) {
+        if (! isset($validatedData['user_id'])) {
             $validatedData['user_id'] = auth('api')->id();
         }
 
@@ -129,13 +144,12 @@ class UpdateTaskRequest extends ApiFormRequest
     /**
      * Configure the validator instance.
      *
-     * @param Validator $validator
-     * @return void
+     * @param  Validator  $validator
      */
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
-            if ($this->input('repeat_type') === 'custom' && !$this->input('repeat_end_date')) {
+            if ($this->input('repeat_type') === 'custom' && ! $this->input('repeat_end_date')) {
                 $validator->errors()->add('repeat_end_date', 'Xüsusi təkrarlanma seçildikdə bitmə tarixi mütləq daxil edilməlidir.');
             }
         });

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Auth\Requests;
 
 use App\Http\Requests\ApiFormRequest;
 
-class LoginRequest  extends ApiFormRequest
+class LoginRequest extends ApiFormRequest
 {
     /**
      * @return string[]

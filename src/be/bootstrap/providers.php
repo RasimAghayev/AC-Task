@@ -1,6 +1,9 @@
 <?php
 
+use App\Providers\AppServiceProvider;
+use App\Providers\SwaggerServiceProvider;
+
 return [
-    App\Providers\AppServiceProvider::class,
-    App\Providers\SwaggerServiceProvider::class,
+    AppServiceProvider::class,
+    SwaggerServiceProvider::class,
 ];

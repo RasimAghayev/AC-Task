@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Tasks\Enums;
 
-
 enum TaskPriority: string
 {
     case LOW = 'low';
@@ -10,12 +9,9 @@ enum TaskPriority: string
     case HIGH = 'high';
     case URGENT = 'urgent';
 
-    /**
-     * @return string
-     */
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::LOW => 'Aşağı',
             self::MEDIUM => 'Orta',
             self::HIGH => 'Yüksək',
@@ -23,20 +19,14 @@ enum TaskPriority: string
         };
     }
 
-    /**
-     * @return array
-     */
     public static function values(): array
     {
         return array_column(self::cases(), 'value');
     }
 
-    /**
-     * @return string
-     */
     public function color(): string
     {
-        return match($this) {
+        return match ($this) {
             self::LOW => '#8BB9DD',
             self::MEDIUM => '#FFB347',
             self::HIGH => '#FF6B6B',
