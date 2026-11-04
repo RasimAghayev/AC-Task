@@ -4,6 +4,11 @@
 #
 # Uses gitleaks if it is on PATH; otherwise falls back to the official
 # Docker image (Docker is already a hard requirement of this project).
+#
+# Known limitation: the Docker fallback needs a real .git directory; it
+# does not work from a `git worktree` checkout, since .git there is a
+# pointer file to the main clone's git dir, which the container can't
+# see. Install gitleaks locally if you work from a worktree.
 set -e
 
 if command -v gitleaks >/dev/null 2>&1; then
