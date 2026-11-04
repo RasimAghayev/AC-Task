@@ -1,37 +1,29 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Tasks\Services;
 
-use App\Http\Controllers\Tasks\{
-    DTOs\TaskDTO,
-    Filters\TaskFilters,
-    Repositories\TaskRepositoryInterface,
-    Models\Task
-};
+use App\Http\Controllers\Tasks\DTOs\TaskDTO;
+use App\Http\Controllers\Tasks\Filters\TaskFilters;
+use App\Http\Controllers\Tasks\Models\Task;
+use App\Http\Controllers\Tasks\Repositories\TaskRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
 class TaskService implements TaskServiceInterface
 {
-    /**
-     * @param TaskRepositoryInterface $taskRepository
-     */
     public function __construct(
         protected TaskRepositoryInterface $taskRepository
-    ){}
+    ) {}
 
     /**
      * Get filtered tasks with pagination
-     *
-     * @param Request $request
-     * @param bool $includeTags
-     * @param int $perPage
-     * @return LengthAwarePaginator
      */
     public function getTasks(Request $request, bool $includeTags, int $perPage): LengthAwarePaginator
     {
-        $filter = new TaskFilters();
+        $filter = new TaskFilters;
         $queryItems = $filter->transform($request);
 
         return $this->taskRepository->getFilteredTasks(
@@ -41,10 +33,6 @@ class TaskService implements TaskServiceInterface
         );
     }
 
-    /**
-     * @param TaskDTO $taskDTO
-     * @return Task
-     */
     public function createTask(TaskDTO $taskDTO): Task
     {
         return DB::transaction(function () use ($taskDTO) {
@@ -52,31 +40,18 @@ class TaskService implements TaskServiceInterface
         });
     }
 
-    /**
-     * @param int $id
-     * @return Task
-     */
     public function getTaskById(int $id): Task
     {
         return $this->taskRepository->findOrFail($id);
     }
 
-    /**
-     * @param int $id
-     * @param TaskDTO $taskDTO
-     * @return Task
-     */
     public function updateTask(int $id, TaskDTO $taskDTO): Task
     {
-        return DB::transaction(function () use ($id,$taskDTO) {
+        return DB::transaction(function () use ($id, $taskDTO) {
             return $this->taskRepository->update($id, $taskDTO);
         });
     }
 
-    /**
-     * @param int $id
-     * @return void
-     */
     public function deleteTask(int $id): void
     {
         DB::transaction(function () use ($id) {
@@ -84,15 +59,9 @@ class TaskService implements TaskServiceInterface
         });
     }
 
-    /**
-     * @param Request $request
-     * @param bool $includeTags
-     * @param int|null $userId
-     * @return array
-     */
     public function getTasksReport(Request $request, bool $includeTags, ?int $userId = null): array
     {
-        $filter = new TaskFilters();
+        $filter = new TaskFilters;
         $queryItems = $filter->transform($request);
 
         return $this->taskRepository->getTasksReport(

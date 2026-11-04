@@ -56,3 +56,7 @@
 /src/fe/.env.*
 /src/fe/!.env.example
 /db
+
+# The state of the stack (R92): the local environment file, the data of the
+# databases and the documents of the frontend.
+/var/

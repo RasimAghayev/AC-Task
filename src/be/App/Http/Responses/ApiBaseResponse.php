@@ -3,25 +3,17 @@
 namespace App\Http\Responses;
 
 use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Response;
 use JsonException;
-use Illuminate\Http\{JsonResponse, Resources\Json\JsonResource, Response};
 
 abstract class ApiBaseResponse extends Response implements Responsable
 {
-    /**
-     * @var mixed
-     */
     protected mixed $dataOrMessage;
 
-    /**
-     * @var int|null
-     */
     protected ?int $code;
 
-    /**
-     * @param mixed $dataOrMessage
-     * @param int|null $code
-     */
     private function __construct(mixed $dataOrMessage = [], ?int $code = null)
     {
         parent::__construct();
@@ -30,20 +22,11 @@ abstract class ApiBaseResponse extends Response implements Responsable
         $this->code = $code;
     }
 
-    /**
-     * @param mixed $dataOrMessage
-     * @param int|null $code
-     * @return static
-     */
     public static function make(mixed $dataOrMessage = [], ?int $code = null): static
     {
         return new static($dataOrMessage, $code);
     }
 
-    /**
-     * @param $request
-     * @return JsonResponse
-     */
     public function toResponse($request): JsonResponse
     {
         $responseArray = [
@@ -63,7 +46,7 @@ abstract class ApiBaseResponse extends Response implements Responsable
         $response->setStatusCode($this->code ?? $this->defaultResponseCode());
 
         $headers = $this->headers->all();
-        if (!empty($headers)) {
+        if (! empty($headers)) {
             $response->headers->add($headers);
         }
 
@@ -73,8 +56,6 @@ abstract class ApiBaseResponse extends Response implements Responsable
     /**
      * Format the result data
      *
-     * @param mixed $result
-     * @return mixed
      * @throws JsonException
      */
     protected function formatResult(mixed $result): mixed
@@ -87,6 +68,7 @@ abstract class ApiBaseResponse extends Response implements Responsable
             if ($result instanceof JsonResource) {
                 return $result->resolve(request());
             }
+
             return $result->toArray(request());
         }
 
@@ -101,9 +83,6 @@ abstract class ApiBaseResponse extends Response implements Responsable
         return $result;
     }
 
-    /**
-     * @return int
-     */
     protected function defaultResponseCode(): int
     {
         return 500;
@@ -111,8 +90,6 @@ abstract class ApiBaseResponse extends Response implements Responsable
 
     /**
      * Get response status code
-     *
-     * @return int
      */
     public function getStatusCode(): int
     {

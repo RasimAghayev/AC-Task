@@ -1,13 +1,11 @@
 <?php
+
 namespace App\Http\Controllers\Tasks\Filters;
 
 use App\Filters\ApiFilter;
-use App\Http\Controllers\Tasks\Enums\
-{
-    TaskPriority,
-    TaskStatus,
-    TaskRepeatTypeEnum
-};
+use App\Http\Controllers\Tasks\Enums\TaskPriority;
+use App\Http\Controllers\Tasks\Enums\TaskRepeatTypeEnum;
+use App\Http\Controllers\Tasks\Enums\TaskStatus;
 use Illuminate\Http\Request;
 use InvalidArgumentException;
 
@@ -28,29 +26,29 @@ class TaskFilters extends ApiFilter
         'title_des' => [
             'concat' => [
                 'relation' => null,
-                'fields' => ['title', 'description']
-            ]
+                'fields' => ['title', 'description'],
+            ],
         ],
         // Relation queries
         'type_eq' => [
             'relation' => 'document.type',
             'type' => 'eq',
-            'column' => 'value'
+            'column' => 'value',
         ],
         'type_lk' => [
             'relation' => 'document.type',
             'type' => 'lk',
-            'column' => 'value'
+            'column' => 'value',
         ],
         'type_nlk' => [
             'relation' => 'document.type',
             'type' => 'nlk',
-            'column' => 'value'
+            'column' => 'value',
         ],
         'file_type_lk' => [
             'relation' => 'document.type',
             'type' => 'concat',
-            'fields' => ['file', 'filetype', 'size']
+            'fields' => ['file', 'filetype', 'size'],
         ],
         'author' => [
             'type' => 'concat',
@@ -66,13 +64,9 @@ class TaskFilters extends ApiFilter
         'repeatEndDate' => 'repeat_end_date',
         'userId' => 'user_id',
         'createdAt' => 'created_at',
-        'updatedAt' => 'updated_at'
+        'updatedAt' => 'updated_at',
     ];
 
-    /**
-     * @param Request $request
-     * @return array
-     */
     public function transform(Request $request): array
     {
         $queries = parent::transform($request);
@@ -91,21 +85,16 @@ class TaskFilters extends ApiFilter
         return $queries;
     }
 
-    /**
-     * @param $value
-     * @param string $enumClass
-     * @return void
-     */
     protected function validateEnum($value, string $enumClass): void
     {
         if (is_array($value)) {
             foreach ($value as $v) {
-                if (!$enumClass::tryFrom($v)) {
+                if (! $enumClass::tryFrom($v)) {
                     throw new InvalidArgumentException("Invalid enum value: {$v}");
                 }
             }
         } else {
-            if (!$enumClass::tryFrom($value)) {
+            if (! $enumClass::tryFrom($value)) {
                 throw new InvalidArgumentException("Invalid enum value: {$value}");
             }
         }

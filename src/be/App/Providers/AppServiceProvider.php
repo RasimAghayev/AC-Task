@@ -3,16 +3,15 @@
 namespace App\Providers;
 
 use App\Http\Controllers\Tasks\Models\Task;
+use App\Http\Controllers\Tasks\Policies\TaskPolicy;
 use App\Http\Controllers\Tasks\Repositories\TaskRepository;
 use App\Http\Controllers\Tasks\Repositories\TaskRepositoryInterface;
 use App\Http\Controllers\Tasks\Services\TaskService;
 use App\Http\Controllers\Tasks\Services\TaskServiceInterface;
-use App\Http\Controllers\Tasks\Policies\TaskPolicy;
+use App\Http\Controllers\Users\Repository\UserRepository;
+use App\Http\Controllers\Users\Repository\UserRepositoryInterface;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Gate;
-use App\Http\Controllers\Users\Repository\{
-    UserRepository,UserRepositoryInterface
-};
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider

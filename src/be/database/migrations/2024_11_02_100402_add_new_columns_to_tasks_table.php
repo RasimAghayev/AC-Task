@@ -45,7 +45,7 @@ return new class extends Migration
                 'priority',
                 'repeat_type',
                 'repeat_end_date',
-                'tags'
+                'tags',
             ]);
         });
     }

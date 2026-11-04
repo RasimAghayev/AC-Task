@@ -1,61 +1,42 @@
 <?php
 
 use App\Http\Middlewares\CompressResponse;
-use App\Http\Middlewares\SwaggerCSPMiddleware;
-use App\Http\Responses\
-{
-    ErrorTokenBlacklisted,
-    ErrorTokenInvalid,
-    ErrorTokenExpired,
-//    ErrorMethodNotAllowedResponse,
-    ErrorNotFoundResponse,
-    ErrorTooManyAttemptsResponse,
-    ErrorUnauthenticatedResponse,
-    ErrorValidationResponse,
-    ErrorInternalServerErrorResponse
-};
-use Illuminate\Foundation\Configuration\
-{
-    Exceptions,
-    Middleware
-};
-use Illuminate\Foundation\Http\Middleware\
-{
-    ConvertEmptyStringsToNull,
-    PreventRequestsDuringMaintenance,
-    TrimStrings,
-    ValidatePostSize,
-};
-use Illuminate\Http\Exceptions\
-{
-    ThrottleRequestsException,
-    HttpResponseException
-};
-use phpOpenSourceSaver\JWTAuth\Exceptions\
-{
-    TokenExpiredException,
-    TokenInvalidException,
-    TokenBlacklistedException
-};
-use Illuminate\Http\
-{
-    Middleware\HandleCors,
-    Middleware\TrustProxies,
-    Request,
-    Response
-};
-use Illuminate\Routing\Middleware\
-{
-    ThrottleRequests,
-    ValidateSignature
-};
 use App\Http\Middlewares\SecurityHeaders;
-use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
-use Illuminate\Foundation\Application;
+use App\Http\Middlewares\SwaggerCSPMiddleware;
+use App\Http\Responses\ErrorApiResponse;
+use App\Http\Responses\ErrorInternalServerErrorResponse;
+use App\Http\Responses\ErrorNotFoundResponse;
+use App\Http\Responses\ErrorTokenBlacklisted;
+use App\Http\Responses\ErrorTokenExpired;
+use App\Http\Responses\ErrorTokenInvalid;
+use App\Http\Responses\ErrorTooManyAttemptsResponse;
+use App\Http\Responses\ErrorUnauthenticatedResponse;
+use App\Http\Responses\ErrorValidationResponse;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Foundation\Application;
+use Illuminate\Foundation\Configuration\Exceptions;
+use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
+use Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance;
+use Illuminate\Foundation\Http\Middleware\TrimStrings;
+use Illuminate\Foundation\Http\Middleware\ValidatePostSize;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
+use Illuminate\Http\Middleware\HandleCors;
+use Illuminate\Http\Middleware\TrustProxies;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Routing\Middleware\ThrottleRequests;
+use Illuminate\Routing\Middleware\ValidateSignature;
 use Illuminate\Validation\ValidationException;
-use Symfony\Component\Routing\Exception\RouteNotFoundException;
+use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
+use phpOpenSourceSaver\JWTAuth\Exceptions\TokenBlacklistedException;
+use phpOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException;
+use phpOpenSourceSaver\JWTAuth\Exceptions\TokenInvalidException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -90,7 +71,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         // API Middleware Group
         $middleware->group('swagger', [
-            SwaggerCSPMiddleware::class
+            SwaggerCSPMiddleware::class,
         ]);
 
         // Route Specific Middleware Aliases
@@ -109,7 +90,14 @@ return Application::configure(basePath: dirname(__DIR__))
                 $response = match (true) {
                     $e instanceof RouteNotFoundException => ErrorNotFoundResponse::make(),
                     $e instanceof AuthenticationException => ErrorUnauthenticatedResponse::make(),
-//                    $e instanceof BadMethodCallException => ErrorMethodNotAllowedResponse::make(),
+                    // A request that the policy of the model refused is an
+                    // answer with the status 403. The framework turns the
+                    // exception of the policy into this one before the
+                    // answers are built, so the case of the exception of the
+                    // policy never held.
+                    $e instanceof AccessDeniedHttpException => ErrorApiResponse::make($e->getMessage(), 403),
+                    $e instanceof AuthorizationException => ErrorApiResponse::make($e->getMessage(), 403),
+                    //                    $e instanceof BadMethodCallException => ErrorMethodNotAllowedResponse::make(),
                     $e instanceof ValidationException => ErrorValidationResponse::make($e->errors()),
                     $e instanceof ThrottleRequestsException => ErrorTooManyAttemptsResponse::make(),
                     $e instanceof TokenExpiredException => ErrorTokenExpired::make(),
@@ -117,7 +105,7 @@ return Application::configure(basePath: dirname(__DIR__))
                     $e instanceof TokenBlacklistedException => ErrorTokenBlacklisted::make(),
                     default => null,
                 };
-                if (!$response) {
+                if (! $response) {
                     $errorMessage = config('app.debug') ? $e->getMessage() : '';
                     $response = ErrorInternalServerErrorResponse::make($errorMessage);
                 }
@@ -125,8 +113,10 @@ return Application::configure(basePath: dirname(__DIR__))
                     $headers = $e->getHeaders();
                     $response->headers->add($headers);
                 }
+
                 return $response;
             }
+
             return null;
         });
 
