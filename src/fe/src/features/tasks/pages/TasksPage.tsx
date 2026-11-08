@@ -18,7 +18,6 @@ export const TasksPage = () => {
 
   useEffect(() => {
     if (!isInitialized) {
-      console.log('Initializing tasks page');
       fetchTasks(1);
     }
   }, [isInitialized, fetchTasks]);
