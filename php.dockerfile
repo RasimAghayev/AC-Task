@@ -5,7 +5,7 @@
 # copied into the image, so the container needs no bind mount of the
 # repository. Every bind mount of the compose stack lives under var/ (R92).
 
-FROM php:8.3-fpm@sha256:411e3bf3e51d20c43ff5de62ec82baafcd7499f0beab2df5bb7f671ba730867e AS base
+FROM php:8.3-fpm@sha256:03af352853b05e35ee15ab898a2755532573684c7d1120b246dbd4e3c90f5007 AS base
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libpng-dev \
