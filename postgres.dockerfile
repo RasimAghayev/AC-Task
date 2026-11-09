@@ -3,7 +3,7 @@
 # The service builds from this file instead of pointing at a registry image
 # (R91). The base image is pinned by digest.
 
-FROM postgres:16-alpine@sha256:aa6cb33cf4c19c765cefcf48d96176258800870a9a1e930ad126200f9d825139
+FROM postgres:18-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395
 
 # The data directory is a bind mount from var/postgres, so the permissions of
 # the mount point are set on the host side.
