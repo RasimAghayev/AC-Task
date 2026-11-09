@@ -3,7 +3,7 @@
 # The service builds from this file instead of pointing at a registry image
 # (R91). The base image is pinned by digest.
 
-FROM mongo:7@sha256:8bb4442761a63a8dda452744082cdac9644b429807eb977b42324a63cef59ca4
+FROM mongo:9@sha256:452bdaf2127b8ff851e31410a267809b9829eded219979f2210e7c7efb85a058
 
 # The data directory is a bind mount from var/mongo, so the permissions of the
 # mount point are set on the host side.
