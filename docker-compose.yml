@@ -139,29 +139,6 @@ services:
     networks:
       - AzeriCard
 
-  mongodb:
-    build:
-      context: .
-      dockerfile: mongo.dockerfile
-    container_name: ac_mongodb
-    restart: always
-    ports:
-      - "${MONGO_PORT:-37017}:27017"
-    volumes:
-      - ./var/mongo:/data/db
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${DB_USERNAME:?DB_USERNAME is required, copy .env.example to var/.env}
-      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required, copy .env.example to var/.env}
-    healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 20s
-    <<: *resources-default
-    networks:
-      - AzeriCard
-
   node:
     build:
       context: .

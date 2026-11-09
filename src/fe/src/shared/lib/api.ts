@@ -16,12 +16,6 @@ api.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    console.log('API Request:', {
-      url: config.url,
-      method: config.method,
-      headers: config.headers
-    });
-
     return config;
   },
   (error: AxiosError) => {
