@@ -2,7 +2,7 @@
 #
 # The base image is pinned by digest.
 
-FROM nginx:stable-alpine@sha256:901e593c95dc85f5a729f5765516321366ef4ac401821431d408897e95287d0a
+FROM nginx:stable-alpine@sha256:8eb04fe3b385090e9aa02961f77398ad09b6bf33ab07f6669a5bb7acce22c0d3
 
 ADD ./server/nginx/default.conf /etc/nginx/conf.d/default.conf
 
