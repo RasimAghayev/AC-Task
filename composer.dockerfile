@@ -3,6 +3,6 @@
 # The service of the compose stack runs the composer, so it builds from this
 # file instead of pointing at a registry image (R91).
 
-FROM composer:2@sha256:0c8e663f14c94d07b3c45b175c51f5a14718508f21fe4dd7e54f09488dd0ed71
+FROM composer:2@sha256:5b2137f112f939a92788ceb5e55f54859d9dbf467a44037cf7760bdda949f365
 
 WORKDIR /var/www/html/be
